@@ -4,7 +4,7 @@
 
 % user can set global variables Niter and nofigs
 if ~exist('Niter')
-    Niter = 1e6;      % slow ... 20 minutes?
+    Niter = 1e6;
 end
 nofigs = exist('nofigs');
 
@@ -15,7 +15,7 @@ y = [ones(1,5) zeros(1,5); zeros(1,5) ones(1,5)];
 
 % train it ... slow
 fprintf('training with Niter = %d ...\n', Niter)
-[W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter);
+[W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter,1000);
 fprintf('done!\n')
 if nofigs,  return,  end  % if user set nofigs to any value then stop
 
@@ -31,7 +31,7 @@ title('compare Figure 2.1')
 
 % show cost history
 figure(2)
-semilogy(100*(1:length(costs)),costs,'b-','LineWidth',2)
+semilogy(1000*(1:length(costs)),costs,'b-','LineWidth',2)
 xlabel('Iteration')
 ylabel('Cost function value')
 set(gca,'FontWeight','Bold','FontSize',16)

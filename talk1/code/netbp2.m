@@ -1,21 +1,25 @@
-function [W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter)
+function [W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter,monitorN)
 % NETBP2 Use stochastic gradients and backpropagation to train a network.
 % This is an Octave-compatible rewrite of NETBP by Higham & Higham (2019)
 % = HH19.  See:  https://www.maths.ed.ac.uk/~dhigham/algfiles.html
 % Sets up a fixed-topology four-layer network (Fig 2.3 in HH19).
 % See EXAMPLE1 for an example.
 % Usage:
-%   [W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter)
-% where:
+%   [W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter,monitorN)
+% inputs:
 %   x1, x2      input data (size 1 x N)
 %   y           output data (size 2 x N)
 %   Niter       number of stochastic gradient iterations
+%   monitorN    print and save cost value every monitorN iters
+% outputs:
 %   W2, W3, W4  weight matrices (after training)
 %   b2, b3, b4  bias vectors (after training)
-%   costs       cost (objective) value history, every 100 iters
+%   costs       cost (objective) value at every monitorN iter
 
 % Check data
 isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0;
+if nargin < 5,  monitorN = 1000;  end
+if nargin < 4,  error('at least 4 arguments required'),  end
 x1 = x1(:);  x2 = x2(:);   % force into columns
 if length(x1) ~= length(x2)
     error('input data x1,x2 must be vectors of same length N')
@@ -37,8 +41,8 @@ W2 = 0.5*randn(2,2); W3 = 0.5*randn(3,2); W4 = 0.5*randn(2,3);
 b2 = 0.5*randn(2,1); b3 = 0.5*randn(3,1); b4 = 0.5*randn(2,1);
 
 % Do stochastic gradient iterations
-eta = 0.05;                % learning rate ... a magic number
-costs = zeros(Niter/100,1);  % value of cost function every 100 iterations
+eta = 0.05;               % learning rate ... a magic number
+costs = zeros(Niter/monitorN,1);
 counter = 1;
 for j = 1:Niter
     % Choose a training point at random
@@ -59,8 +63,8 @@ for j = 1:Niter
     b2 = b2 - eta * delta2;
     b3 = b3 - eta * delta3;
     b4 = b4 - eta * delta4;
-    % Monitor progress; only evaluate cost every 1000 iterations
-    if mod(j,100) == 0
+    % Monitor progress
+    if mod(j,monitorN) == 0
         costs(counter) = cost(W2,W3,W4,b2,b3,b4);
         fprintf('%9d:  cost = %.3e\n', j, costs(counter))
         counter = counter + 1;
