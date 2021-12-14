@@ -29,9 +29,9 @@ title('compare Figure 2.1')
 
 % show cost history
 figure(2)
-semilogy(1:length(costs),costs,'b-','LineWidth',2)
-xlabel('Iteration Number (x 100)')
-ylabel('Value of cost function')
+semilogy(100*(1:length(costs)),costs,'b-','LineWidth',2)
+xlabel('Iteration')
+ylabel('Cost function value')
 set(gca,'FontWeight','Bold','FontSize',16)
 title('compare Figure 6.1 (scale corrected)')
 
