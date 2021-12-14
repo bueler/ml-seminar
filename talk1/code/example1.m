@@ -2,10 +2,11 @@
 % Compare figure-generation in NETBPFULL.  Reproduces Figures 2.1, 6.1, and
 % 6.2 from HH19.
 
-% user can set global variable Niter
+% user can set global variables Niter and nofigs
 if ~exist('Niter')
     Niter = 1e6;      % slow ... 20 minutes?
 end
+nofigs = exist('nofigs');
 
 % the data (see Figure 2.1 in HH19)
 x1 = [0.1,0.3,0.1,0.6,0.4,0.6,0.5,0.9,0.4,0.7];
@@ -16,6 +17,7 @@ y = [ones(1,5) zeros(1,5); zeros(1,5) ones(1,5)];
 fprintf('training with Niter = %d ...\n', Niter)
 [W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter);
 fprintf('done!\n')
+if nofigs,  return,  end  % if user set nofigs to any value then stop
 
 % show data
 figure(1)
