@@ -27,8 +27,7 @@ end
 
 % Set seed for reproducable results
 if isOctave
-    randn('state',5000);
-    rand('state',5000);
+    randn('seed',5000);  rand('seed',5000);
 else
     rng(5000);
 end
