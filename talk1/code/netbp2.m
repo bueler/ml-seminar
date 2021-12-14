@@ -15,6 +15,7 @@ function [W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter)
 %   costs       cost (objective) value history, every 100 iters
 
 % Check data
+isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0;
 x1 = x1(:);  x2 = x2(:);   % force into columns
 if length(x1) ~= length(x2)
     error('input data x1,x2 must be vectors of same length N')
@@ -24,8 +25,15 @@ if any(size(y) ~= [2,N])
     error('output data y must be 2 x N where N = length(x1)')
 end
 
+% Set seed for reproducable results
+if isOctave
+    randn('state',5000);
+    rand('state',5000);
+else
+    rng(5000);
+end
+
 % Initialize weights and biases:  fixed network topology!
-randn('seed',5000);        % for reproducable results
 W2 = 0.5*randn(2,2); W3 = 0.5*randn(3,2); W4 = 0.5*randn(2,3);
 b2 = 0.5*randn(2,1); b3 = 0.5*randn(3,1); b4 = 0.5*randn(2,1);
 
@@ -34,7 +42,9 @@ eta = 0.05;                % learning rate ... a magic number
 costs = zeros(Niter/100,1);  % value of cost function every 100 iterations
 counter = 1;
 for j = 1:Niter
-    k = randi(N);          % choose a training point at random
+    % Choose a training point at random
+    k = ceil(N*rand(1));  % same as  k = randi(N)
+                          % but avoids Octave/Matlab difference in randi()
     % Forward pass; equation (3.2) in HH19
     a2 = activate(W2 * [x1(k); x2(k)] + b2);
     a3 = activate(W3 * a2 + b3);
