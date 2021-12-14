@@ -2,9 +2,9 @@
 % Compare figure-generation in NETBPFULL.  Reproduces Figures 2.1, 6.1, and
 % 6.2 from HH19.
 
-% user can set Niter
+% user can set global variable Niter
 if ~exist('Niter')
-    Niter = 1e6;
+    Niter = 1e6;      % slow ... 20 minutes?
 end
 
 % the data (see Figure 2.1 in HH19)
@@ -29,8 +29,8 @@ title('compare Figure 2.1')
 
 % show cost history
 figure(2)
-semilogy([1:1e3:Niter],costs(1:1e3:Niter),'b-','LineWidth',2)
-xlabel('Iteration Number')
+semilogy(1:length(costs),costs,'b-','LineWidth',2)
+xlabel('Iteration Number (x 100)')
 ylabel('Value of cost function')
 set(gca,'FontWeight','Bold','FontSize',16)
 title('compare Figure 6.1 (scale corrected)')
