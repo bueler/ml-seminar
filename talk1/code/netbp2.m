@@ -2,7 +2,7 @@ function [W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter)
 % NETBP2 Use backpropagation to train a network.  This is an Octave-
 % compatible rewrite of NETBP by Higham & Higham (2019) = HH19.
 % Derived from:  https://www.maths.ed.ac.uk/~dhigham/algfiles.html
-% Sets up a fixed four-layer network (Fig 2.3 in HH19)
+% Sets up a fixed-topology four-layer network (Fig 2.3 in HH19)
 % Usage:
 %   [W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter)
 % where:
@@ -15,19 +15,28 @@ function [W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter)
 % Example:
 %   >> example1
 
-% Initialize weights and biases
-randn('seed',5000);        % reproducable results
+% Check data
+x1 = x1(:);  x2 = x2(:);   % force into columns
+if length(x1) ~= length(x2)
+    error('input data x1,x2 must be vectors of same length m')
+end
+N = length(x1);            % number of pieces of data
+if any(size(y) ~= [2,N])
+    error('output data y must be 2 x m where m = length(x1)')
+end
+
+% Initialize weights and biases:  fixed network topology!
+randn('seed',5000);        % for reproducable results
 W2 = 0.5*randn(2,2); W3 = 0.5*randn(3,2); W4 = 0.5*randn(2,3);
 b2 = 0.5*randn(2,1); b3 = 0.5*randn(3,1); b4 = 0.5*randn(2,1);
 
-% Forward and Back propagate
+% Forward pass and back propagate
 eta = 0.05;                % learning rate
 costs = zeros(Niter,1);    % value of cost function at each iteration
 for counter = 1:Niter
-    k = randi(10);         % choose a training point at random
-    x = [x1(k); x2(k)];
+    k = randi(N);          % choose a training point at random
     % Forward pass
-    a2 = activate(x,W2,b2);
+    a2 = activate([x1(k); x2(k)],W2,b2);
     a3 = activate(a2,W3,b3);
     a4 = activate(a3,W4,b4);
     % Backward pass
@@ -35,7 +44,7 @@ for counter = 1:Niter
     delta3 = a3.*(1-a3).*(W4'*delta4);
     delta2 = a2.*(1-a2).*(W3'*delta3);
     % Gradient step
-    W2 = W2 - eta*delta2*x';
+    W2 = W2 - eta*delta2*[x1(k) x2(k)];
     W3 = W3 - eta*delta3*a2';
     W4 = W4 - eta*delta4*a3';
     b2 = b2 - eta*delta2;
@@ -44,26 +53,25 @@ for counter = 1:Niter
     % Monitor progress
     costs(counter) = cost(W2,W3,W4,b2,b3,b4);
     if mod(counter,1000) == 0
-        fprintf('%9d:  cost = %8.4f\n', counter, costs(counter))
+        fprintf('%9d:  cost = %.3e\n', counter, costs(counter))
     end
 end
 
     function y = activate(x,W,b)
     % ACTIVATE  Logistic activation function.
-
     y = 1./(1+exp(-(W*x+b)));
     end
 
     function costval = cost(W2,W3,W4,b2,b3,b4)
-    costvec = zeros(10,1);
-    for i = 1:10
-        x =[x1(i);x2(i)];
-        a2 = activate(x,W2,b2);
+    % COST  Evaluate cost functional.
+    costval = 0;
+    for i = 1:N
+        a2 = activate([x1(i); x2(i)],W2,b2);
         a3 = activate(a2,W3,b3);
         a4 = activate(a3,W4,b4);
-        costvec(i) = norm(y(:,i) - a4,2);
+        costval = costval + norm(y(:,i) - a4,2)^2;
     end
-    costval = norm(costvec,2)^2;
+    costval = costval / (2 * N);
     end
 
 end
