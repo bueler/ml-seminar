@@ -1,12 +1,30 @@
+function Pval = example1(optmethod,Niter,figs,repeatable)
 % EXAMPLE1  Run NETBP2 or NETOPT for the main example in
-% Higham & Higham (2019) = HH19.  Compare NETBPFULL.  Defaults
-% to using NETBP2 and reproduces Figures 6.1, 6.2 from HH19.
-% Calls GRIDFORWARD to generate classification figure.
+% Higham & Higham (2019) = HH19.  (Compare NETBPFULL from HH19.)
+% Default solver uses NETBP2 and reproduces Figures 6.1, 6.2 from
+% HH19.  Calls GRIDFORWARD to generate classification figure.
+% Usage:
+%   Pval = example1(optmethod,Niter,figs,repeatable)
+% inputs:
+%   optmethod   'sgbp' = stochastic gradient back-propagation [default]
+%               'nm'   = Nelder-Mead
+%   Niter       number of forward passes through network (iterations)
+%   figs        if true [default] then show figures
+%   repeatable  if true [default] then set seed on random number gen
+% outputs:
+%   Pval        parameter values after training; see EXPANDP
+% Examples:
+%   >> example1;                                 % default behavior
+%   >> Pval = example1('sgbp',1e6,true,true);    % also defaults
+%   >> Pval = example1('nm',10000,false,false);  % change defaults
 
-% user can set global variables: nofigs, optimize, Niter
-nofigs = exist('nofigs');
-if ~exist('optimize')
-    optimize = 'sgbp';
+% settings
+if nargin < 4,  repeatable = true;  end
+if nargin < 3,  figs = true;  end
+if nargin < 1,  optmethod = 'sgbp';  end
+if nargin < 2
+    if strcmp(optmethod,'sgbp'),  Niter = 1e6;
+    else,                         Niter = 1e3;  end
 end
 
 % the data (see Figure 2.1 in HH19)
@@ -14,38 +32,34 @@ x1 = [0.1,0.3,0.1,0.6,0.4,0.6,0.5,0.9,0.4,0.7];
 x2 = [0.1,0.4,0.5,0.9,0.2,0.3,0.6,0.2,0.4,0.6];
 y = [ones(1,5) zeros(1,5); zeros(1,5) ones(1,5)];
 
-% train it
-if strcmp(optimize,'sgbp')
-    if ~exist('Niter'),  Niter = 1e6;  end
-    fprintf('training using SG and BP with Niter = %d ...\n', Niter)
-    [Pval,costs] = netbp2(x1,x2,y,Niter,1000);
-elseif strcmp(optimize,'nm')
-    if ~exist('Niter'),  Niter = 1e3;  end
-    fprintf('training using Nelder-Mead, at most %d cost evals ...\n', Niter)
-    [Pval,finalC] = netopt(x1,x2,y,Niter);
-else
-    error('unsupported value for optimize')
+% initialize parameters to random values
+if repeatable
+    % set seed for reproducable results
+    isOctave = (exist('OCTAVE_VERSION', 'builtin') ~= 0);
+    if isOctave,  randn('seed',5000);  rand('seed',5000);
+    else,  rng(5000);  end
 end
+Pzero = 0.5 * randn(23,1);
+
+% train it
+if strcmp(optmethod,'sgbp')
+    fprintf('training using SG and BP with Niter = %d ...\n', Niter)
+    [Pval,costs] = netbp2(x1,x2,y,Pzero,Niter,1000);
+elseif strcmp(optmethod,'nm')
+    fprintf('training using Nelder-Mead, at most %d cost evals ...\n', Niter)
+    [Pval,finalC] = netopt(x1,x2,y,Pzero,Niter);
+else,  error('unsupported value for optimize'),  end
 fprintf('done!\n')
-if nofigs,  return,  end  % if user set nofigs to any value then stop
+if ~figs,  return,  end
 
-% visualize classification result
-[X,Y,Aval,Bval] = gridforward(Pval);
-Mval = (Aval > Bval);      % compare output neuron values
+% visualize classification result; compare Figure 6.2
 figure(1)
-contourf(X,Y,double(Mval),[0.5 0.5]),  hold on
-colormap([1 1 1; 0.8 0.8 0.8])
-plot(x1(1:5),x2(1:5),'ro','MarkerSize',12,'LineWidth',4)
-plot(x1(6:10),x2(6:10),'bx','MarkerSize',12,'LineWidth',4)
-axis([0 1 0 1])
-set(gca,'FontWeight','Bold','FontSize',16)
-title('compare Figure 6.2')
+classfig(x1,x2,y,Pval);
 
-% show cost history if available
-if strcmp(optimize,'sgbp')
+% show cost history if available; compare Figure 6.1
+if strcmp(optmethod,'sgbp')
     figure(2)
     semilogy(1000*(1:length(costs)),costs,'b-','LineWidth',2)
     xlabel('Iteration'),  ylabel('Cost function value')
     set(gca,'FontWeight','Bold','FontSize',16)
-    title('compare Figure 6.1 (scale corrected)')
 end

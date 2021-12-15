@@ -1,5 +1,6 @@
 function [X,Y,Aval,Bval] = gridforward(Pval,m)
-% GRIDFORWARD Generate arrays of forward-pass results.
+% GRIDFORWARD Generate array of forward-pass results.
+% Used for plotting classification figure.
 
 if nargin < 2,  m = 201;  end
 
