@@ -17,9 +17,6 @@ function [Pval,finalcost] = netopt(x1,x2,y,Pzero,Niter)
 %               = [W2(:); W3(:); W4(:); b2; b3; b4]
 %   finalcosts  final cost (objective) value
 
-% FIXME want to compare Levenberg-Marquart:
-% [finalP, finalerr] = lsqnonlin(@neterr,Pzero);
-
 % Check inputs
 if nargin < 5,  error('at least 5 arguments required'),  end
 x1 = x1(:);  x2 = x2(:);   % force into columns
@@ -33,9 +30,17 @@ end
 
 % solve optimization problem
 f = @(Pval) norm(neterr(Pval),2)^2 / (2*N);
+fprintf('initial cost = %.5f\n',f(Pzero))
+
 % FIXME regularized version with magic scaling:
 % f = @(Pval) norm(neterr(Pval),2)^2 / (2*N) + norm(Pval)^2 / N^4;
-fprintf('initial cost = %.5f\n',f(Pzero))
+
+% FIXME compare quasi-newton method, but f() should also return gradient:
+% [Pval, finalcost] = fminunc(f, Pzero, opts);
+
+% FIXME want to compare Levenberg-Marquart:
+% [Pval, cost] = lsqnonlin(@neterr,Pzero);
+
 opts = optimset('MaxFunEvals',Niter);
 [Pval, finalcost] = fminsearch(f, Pzero, opts);
 fprintf('final cost   = %.5f\n',finalcost)
