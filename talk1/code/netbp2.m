@@ -1,24 +1,27 @@
-function [W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter,monitorN)
+function [Pval,costs] = netbp2(x1,x2,y,Niter,repeatable,monitorN)
 % NETBP2 Use stochastic gradients and backpropagation to train a network.
 % This is an Octave-compatible rewrite of NETBP by Higham & Higham (2019)
 % = HH19.  See:  https://www.maths.ed.ac.uk/~dhigham/algfiles.html
 % Sets up a fixed-topology four-layer network (Fig 2.3 in HH19).
 % See EXAMPLE1 for an example.
 % Usage:
-%   [W2,W3,W4,b2,b3,b4,costs] = netbp2(x1,x2,y,Niter,monitorN)
+%   [Pval,costs] = netbp2(x1,x2,y,Niter,monitorN)
 % inputs:
 %   x1, x2      input data (size 1 x N)
 %   y           output data (size 2 x N)
 %   Niter       number of stochastic gradient iterations
+%   repeatable  if true, set seeds for repeatability
 %   monitorN    print and save cost value every monitorN iters
 % outputs:
-%   W2, W3, W4  weight matrices (after training)
-%   b2, b3, b4  bias vectors (after training)
+%   Pval        parameter values after training, a column vector built
+%               from weight matrices and bias vectors;
+%               = [W2(:); W3(:); W4(:); b2; b3; b4]
 %   costs       cost (objective) value at every monitorN iter
 
 % Check data
 isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0;
-if nargin < 5,  monitorN = 1000;  end
+if nargin < 6,  monitorN = 1000;  end
+if nargin < 5,  repeatable = false;  end
 if nargin < 4,  error('at least 4 arguments required'),  end
 x1 = x1(:);  x2 = x2(:);   % force into columns
 if length(x1) ~= length(x2)
@@ -30,10 +33,12 @@ if any(size(y) ~= [2,N])
 end
 
 % Set seed for reproducable results
-if isOctave
-    randn('seed',5000);  rand('seed',5000);
-else
-    rng(5000);
+if repeatable
+    if isOctave
+        randn('seed',5000);  rand('seed',5000);
+    else
+        rng(5000);
+    end
 end
 
 % Initialize weights and biases:  fixed network topology!
@@ -70,6 +75,9 @@ for j = 1:Niter
         counter = counter + 1;
     end
 end
+
+% Collect outputs
+Pval = [W2(:); W3(:); W4(:); b2; b3; b4];
 
     function y = activate(z)
     % ACTIVATE  Logistic activation function, applied entry-wise.
