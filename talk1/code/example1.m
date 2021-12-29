@@ -8,7 +8,8 @@ function Pval = example1(optmethod,Niter,figs,repeatable)
 % inputs:
 %   optmethod   'sgbp' = stochastic gradient back-propagation [default]
 %               'nm'   = Nelder-Mead
-%   Niter       number of forward passes through network (iterations)
+%   Niter       number of training iterations (for sgbp)
+%               or cost-function evaluations (for nm)
 %   figs        if true [default] then show figures
 %   repeatable  if true [default] then set seed on random number gen
 % outputs:
