@@ -138,9 +138,13 @@ HH19 \, $=$ \,
 \begin{minipage}[t]{0.75\textwidth} \footnotesize
 C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bishop/classes/math533.S21/MachineLearning/SIAMreview.pdf}{\emph{Deep learning: An introduction for applied mathematicians.}} SIAM Review, 61(4), 860-891
 \end{minipage}
+\end{itemize}
+\end{frame}
 
-\normalsize
-\medskip
+
+\begin{frame}{today's talk}
+
+\begin{itemize}
 \item \alert{goal for today:} know the meanings of
 
 \medskip
@@ -151,13 +155,11 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \emph{back-propagation} & \emph{stochastic gradient method}
 \end{tabular}
 
-\normalsize
 \medskip
-    \begin{itemize}
-    \item which standard mathematical concept(s) match these buzzwords?
-    \end{itemize}
+\item which standard mathematical concept(s) match these buzzwords?
 \end{itemize}
 \end{frame}
+
 
 \begin{frame}{big caveat}
 
@@ -167,6 +169,7 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \item I volunteered to give one intro talk, that's all!
 \end{itemize}
 \end{frame}
+
 
 \begin{frame}{Outline}
   \tableofcontents[hideallsubsections]
@@ -231,28 +234,86 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \end{columns}
 \end{frame}
 
-\begin{frame}{fixme}
 
-\includegraphics[height=25mm]{figs/sigmoid} \quad \includegraphics[height=25mm]{figs/relu}
+\begin{frame}{nonlinear activation function}
+
+\begin{center}
+\includegraphics[height=30mm]{figs/sigmoid} \hspace{10mm} \includegraphics[height=30mm]{figs/relu}
+\end{center}
 
 \begin{itemize}
-\item latex
-\item beamer
+\item $\sigma$ is the \alert{activation function}
+\item possibilities:
+    \begin{itemize}
+    \item[$\circ$] \alert{sigmoid}, e.g.\qquad $\displaystyle \sigma(z) = \frac{1}{1 + e^{-z}}$ \quad (left)
+    \item[$\circ$] \alert{rectified linear unit (ReLU)},\qquad $\displaystyle \sigma(z) = \begin{cases} z, & z > 0 \\ 0, & z \le 0 \end{cases}$ \quad (right)
+    \end{itemize}
+\item $\sigma$ is usually(?) increasing, with bounded derivative
 \end{itemize}
+\end{frame}
+
+
+\begin{frame}{neuron roles}
+
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\only<1>{
+\begin{itemize}
+\item $v$ is input
+\item $\sigma$ is fixed
+\item $a$ is the \alert{activation} of the neuron
+\item $w,b$ are parameters
+\end{itemize}
+}
+\only<2>{
+\begin{itemize}
+\item parameters are determined by \alert{training}
+\item a \alert{trained neuron} is one with fixed parameters, so
+    $$a = \sigma(v)$$
+is a function $a:\RR^n \to \RR^1$
+\item we might write when training:
+    $$a = \sigma(v;w,b)$$
+\end{itemize}
+}
+\end{column}
+\begin{column}{0.45\textwidth}
+\includegraphics[width=\textwidth]{figs/b-single-neuron}
+\end{column}
+\end{columns}
 \end{frame}
 
 
 \section{forward through a neural net}
 
-\begin{frame}{fixme}
+\begin{frame}{artificial neural network}
 
-\includegraphics[height=25mm]{figs/state-notation}
+\begin{center}
+\includegraphics[height=35mm]{figs/state-notation}
+\end{center}
 
 \begin{itemize}
-\item latex
+\item FIXME
 \item beamer
 \end{itemize}
 \end{frame}
+
+
+\begin{frame}{forward pass = nonlinear-ized matrix multiplication}
+
+\begin{center}
+\includegraphics[height=25mm]{figs/state-notation}
+\end{center}
+
+\begin{itemize}
+\item $w^\top$ is a row vector \dots one for each neuron
+\item many neurons gives matrix multiplication:
+    $$W = \begin{bmatrix} w_{11}
+    \end{bmatrix}$$
+\item $\sigma$ applied entrywise
+\item FIXME
+\end{itemize}
+\end{frame}
+
 
 \begin{frame}{fixme}
 
