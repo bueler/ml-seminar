@@ -89,7 +89,7 @@
 
 \title{Getting started with machine learning}
 
-\subtitle{({applied math guy confronts artificial neural net})}
+\subtitle{({applied math meets artificial neural net})}
 
 \author{Ed Bueler}
 
@@ -124,13 +124,13 @@
 \begin{frame}{today's talk}
 
 \begin{itemize}
-\item \alert{my topic:} how this $\downarrow$ neural network does a classification task
+\item \alert{my topic:} {\small how this $\downarrow$ neural network does this $\downarrow$ classification task}
 
 \medskip
 \hspace{5mm} \includegraphics[height=25mm]{figs/network.png} \hfill \includegraphics[height=23mm]{figs/classification} \hspace{10mm}
 
 \medskip
-\item it is an \alert{example} from this paper:
+\item it is an \alert{example} from this $\downarrow$ paper:
 
 \medskip
 
@@ -141,7 +141,7 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 
 \normalsize
 \medskip
-\item \alert{goal for this talk:} know the meanings of
+\item \alert{goal for today:} know the meanings of
 
 \medskip
 \small
@@ -159,12 +159,21 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \end{itemize}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Outline}
+\begin{frame}{big caveat}
+
+\begin{itemize}
+\item I am no expert on what I am talking about here
+\item many in room know more than me
+\item I volunteered to give one intro talk, that's all!
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Outline}
   \tableofcontents[hideallsubsections]
 \end{frame}
 
-\section{logistics}
+
+\section{seminar logistics}
 
 \begin{frame}{\emph{participant}-driven seminar}
 
@@ -172,17 +181,17 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \item sign-up sheet!
 \item webpages!
     \begin{itemize}
-    \item \href{http://bueler.github.io/M692S22/index.html}{\texttt{bueler.github.io/M692S22}}
-    \item \href{http://bueler.github.io/M692S22/resources.htm}{\texttt{bueler.github.io/M692S22/resources.htm}}
+    \item[$\circ$] \href{http://bueler.github.io/M692S22/index.html}{\texttt{bueler.github.io/M692S22}}
+    \item[$\circ$] \href{http://bueler.github.io/M692S22/resources.htm}{\texttt{bueler.github.io/M692S22/resources.htm}}
     \end{itemize}
 \item in-person only or hybrid?
     \begin{itemize}
-    \item is this classroom adequate?
+    \item[$\circ$] is this classroom adequate?
     \end{itemize}
 \item what will be the topics?
     \begin{itemize}
-    \item are there out-of-bounds topics?
-    \item who is volunteering to talk?
+    \item[$\circ$] are there out-of-bounds topics?
+    \item[$\circ$] who is volunteering to talk?
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -190,14 +199,36 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 
 \section{a single artificial neuron}
 
-\begin{frame}{fixme}
+\begin{frame}{artificial neuron $=$ nonlinear-ized inner product}
 
-\includegraphics[height=25mm]{figs/single-neuron}
-
+\begin{columns}
+\begin{column}{0.55\textwidth}
 \begin{itemize}
-\item latex
-\item beamer
+\item given (column) vectors $v,w \in \RR^n$
+\item inner product
+    $$\ip{{\color{blue} w}}{v} = {\color{blue} w}^\top v = \sum_{j=1}^n {\color{blue} w_j} v_j$$
+\item apply a nonlinear function $\sigma: \RR^1 \to \RR^1$:
+\only<1>{
+\begin{equation*}
+{\color{red} a} = \sigma\left(\sum_{j=1}^n {\color{blue} w_j} v_j\right) \in \RR^1
+\end{equation*}
+}
+\only<2>{
+\begin{equation*}
+{\color{red} a} = \sigma\left(\sum_{j=1}^n {\color{blue} w_j} v_j + {\color{ForestGreen} b}\right) \in \RR^1
+\end{equation*}
+}
+    \begin{itemize}
+    \item<2>[$\circ$] add a \alert{bias} ${\color{ForestGreen} b} \in \RR^1$
+    \item[$\circ$] that's it! an \alert{artificial neuron}
+    \end{itemize}
 \end{itemize}
+\end{column}
+\begin{column}{0.45\textwidth}
+\only<1>{\includegraphics[width=\textwidth]{figs/single-neuron}}
+\only<2>{\includegraphics[width=\textwidth]{figs/b-single-neuron}}
+\end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}{fixme}
@@ -268,7 +299,7 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \end{center}
 
     \begin{itemize}
-    \item I also use Octave
+    \item[$\circ$] I also use Octave
     \end{itemize}
 \item 
 \item beamer
