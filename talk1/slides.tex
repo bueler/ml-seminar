@@ -93,7 +93,7 @@
 
 \author{Ed Bueler}
 
-\institute[UAF]{MATH 692 Mathematics for Machine Learning \\ University of Alaska Fairbanks}
+\institute[UAF]{MATH 692 Mathematics for Machine Learning \\ UAF}
 
 \date[Spring 2022]{13 January 2022}
 
@@ -202,7 +202,7 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 
 \section{a single artificial neuron}
 
-\begin{frame}{artificial neuron $=$ nonlinear-ized inner product}
+\begin{frame}{one artificial neuron $=$ nonlinear-ized inner product}
 
 \begin{columns}
 \begin{column}{0.55\textwidth}
@@ -263,12 +263,14 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \item $\sigma$ is fixed
 \item $a$ is the \alert{activation} of the neuron
 \item $w,b$ are parameters
+    \begin{itemize}
+    \item[$\circ$] these parameters need \alert{training}
+    \end{itemize}
 \end{itemize}
 }
 \only<2>{
 \begin{itemize}
-\item parameters are determined by \alert{training}
-\item a \alert{trained neuron} is one with fixed parameters
+\item a \alert{trained neuron} is one with fixed parameters $w,b$
 \item function $a:\RR^n \to \RR^1$:
     $$a = \sigma(v)$$
 
@@ -276,7 +278,7 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
     \item[$\circ$] similar cost to inner product
     \item[$\circ$] backward stable
     \end{itemize}
-\item one might write when training:
+\item one might write:
     $$a = \sigma(v;w,b)$$
 \end{itemize}
 }
@@ -289,6 +291,10 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 
 
 \section{forward through a neural net}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
+\end{frame}
 
 \begin{frame}{network notation}
 
@@ -357,7 +363,7 @@ with $b^{[\ell]} \in \RR^{n_{\ell}}$
 \begin{frame}{forward pass = nonlinear-ized matrix multiplication}
 
 \begin{center}
-\includegraphics[height=25mm]{figs/weight-notation}
+\includegraphics[height=25mm]{figs/network}
 \end{center}
 
 \begin{itemize}
@@ -373,27 +379,81 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \end{frame}
 
 
-\begin{frame}{computation work model}
+\begin{frame}{forward pass computation work model (\emph{minor point})}
 
 \begin{itemize}
-\item x
-\item beamer
+\item forward pass work is all in the matrix multiplications
+    \begin{itemize}
+    \item[$\circ$] here work $=$ number of floating-point operations
+    \end{itemize}
+\item work at layer $\ell$:
+    $$2 n^{[\ell-1]} n^{[\ell]} + O(n^{[\ell]}) = O(n^{[\ell-1]} n^{[\ell]})$$
+
+    \begin{itemize}
+    \item[$\circ$] evaluating activation functions is cheap
+    \end{itemize}
+\item let $N=\max\{n^{[\ell]}\}$, the maximum layer size
+\item total forward-pass work:
+    $$\sum_{\ell=2}^L O(n^{[\ell-1]} n^{[\ell]}) = O(L N^2)$$
+
+    \begin{itemize}
+    \item[$\circ$] using big-O in the ``$N\to\infty$'' limit of big layers
+    \item[$\circ$] asymptotically same cost as $L$ matrix-vector products
+    \item[$\circ$] easily computed by GPU hardware
+        \begin{itemize}
+        \item \emph{versus} solving linear systems \dots
+        \end{itemize}
+    \end{itemize}
 \end{itemize}
+\end{frame}
+
+
+\section{training is merely(?) optimization}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
+\end{frame}
+
+\begin{frame}{``training'' is a biologically-motivated procedure}
+
+\begin{itemize}
+\item imagine teaching your dog to read numbers 1,2,3:
+\begin{center}
+\includegraphics[width=0.7\textwidth]{figs/onetwothree}
+\end{center}
+    \begin{itemize}
+    \item[$\circ$] present one image of a digit from above
+    \item[$\circ$] if dog barks correct number of times then gets treat
+    \item[$\circ$] otherwise move on to next image
+    \end{itemize}
+\end{itemize}
+
+\begin{columns}
+\begin{column}{0.6\textwidth}
+\begin{itemize}
+\item we observe that for dogs (and people) the learning ``sticks''
+    \begin{itemize}
+    \item[$\circ$] lasts for days, weeks, years?
+    \end{itemize}
+\item something changes chemically (or structurally) within the dog's brain
+    \begin{itemize}
+    \item[$\circ$] neuron numbers (somewhat) fixed
+    \item[$\circ$] chemical changes in connections between neurons
+    \end{itemize}
+\end{itemize}
+\end{column}
+\begin{column}{0.4\textwidth}
+\includegraphics[width=\textwidth]{figs/physicalneuron}
+\end{column}
+\end{columns}
 \end{frame}
 
 
 \section{backward through a neural net}
 
-\begin{frame}{fixme}
-
-\begin{itemize}
-\item latex
-\item beamer
-\end{itemize}
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
 \end{frame}
-
-
-\section{training is just optimization}
 
 \begin{frame}{fixme}
 
@@ -405,6 +465,10 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 
 
 \section{running the codes yourself}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
+\end{frame}
 
 \begin{frame}{\emph{Matlab online} instructions: HH19 codes}
 
@@ -434,6 +498,10 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 
 
 \section{things that bother me}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
+\end{frame}
 
 \begin{frame}{fixme}
 
