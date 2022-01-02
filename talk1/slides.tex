@@ -89,7 +89,7 @@
 
 \title{Getting started with machine learning}
 
-\subtitle{({applied math meets artificial neural net})}
+\subtitle{({one little artificial neural net})}
 
 \author{Ed Bueler}
 
@@ -130,7 +130,7 @@
 \hspace{5mm} \includegraphics[height=25mm]{figs/network.png} \hfill \includegraphics[height=23mm]{figs/classification} \hspace{10mm}
 
 \medskip
-\item it is an \alert{example} from this $\downarrow$ paper:
+\item an \alert{example} from this $\downarrow$ paper:
 
 \medskip
 
@@ -182,12 +182,12 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 
 \begin{itemize}
 \item sign-up sheet!
-\item webpages!
+\item webpages:
     \begin{itemize}
     \item[$\circ$] \href{http://bueler.github.io/M692S22/index.html}{\texttt{bueler.github.io/M692S22}}
     \item[$\circ$] \href{http://bueler.github.io/M692S22/resources.htm}{\texttt{bueler.github.io/M692S22/resources.htm}}
     \end{itemize}
-\item in-person only or hybrid?
+\item in-person or hybrid?
     \begin{itemize}
     \item[$\circ$] is this classroom adequate?
     \end{itemize}
@@ -248,7 +248,7 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
     \item[$\circ$] \alert{sigmoid}, e.g.\qquad $\displaystyle \sigma(z) = \frac{1}{1 + e^{-z}}$ \quad (left)
     \item[$\circ$] \alert{rectified linear unit (ReLU)},\qquad $\displaystyle \sigma(z) = \begin{cases} z, & z > 0 \\ 0, & z \le 0 \end{cases}$ \quad (right)
     \end{itemize}
-\item $\sigma$ is usually(?) increasing, with bounded derivative
+\item $\sigma$ is increasing, with bounded derivative
 \end{itemize}
 \end{frame}
 
@@ -268,10 +268,15 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \only<2>{
 \begin{itemize}
 \item parameters are determined by \alert{training}
-\item a \alert{trained neuron} is one with fixed parameters, so
+\item a \alert{trained neuron} is one with fixed parameters
+\item function $a:\RR^n \to \RR^1$:
     $$a = \sigma(v)$$
-is a function $a:\RR^n \to \RR^1$
-\item we might write when training:
+
+    \begin{itemize}
+    \item[$\circ$] similar cost to inner product
+    \item[$\circ$] backward stable
+    \end{itemize}
+\item one might write when training:
     $$a = \sigma(v;w,b)$$
 \end{itemize}
 }
@@ -285,15 +290,66 @@ is a function $a:\RR^n \to \RR^1$
 
 \section{forward through a neural net}
 
-\begin{frame}{artificial neural network}
+\begin{frame}{network notation}
 
 \begin{center}
-\includegraphics[height=35mm]{figs/state-notation}
+\includegraphics[height=40mm]{figs/state-notation}
 \end{center}
 
 \begin{itemize}
-\item FIXME
-\item beamer
+\item notation from HH19
+\item ${\color{red} n_\ell}$ is number of neurons in layer $\ell=1,\dots,L$
+    \begin{itemize}
+    \item[$\circ$] $\ell=1$ is \alert{input} layer (for passing-in values $x = {\color{blue} a^{[1]}} \in \RR^{{\color{red} n_1}}$)
+    \item[$\circ$] $\ell=L$ is \alert{output} layer
+    \end{itemize}
+\item activations from layer $\ell$ are a vector ${\color{blue} a^{[\ell]}} \in \RR^{{\color{red} n_\ell}}$
+    \begin{itemize}
+    \item[$\circ$] ${\color{blue} a_j^{[\ell]}}$ is activation of neuron $j$ in layer $\ell$
+    \item[$\circ$] we label a neuron by its activation: ``neuron ${\color{blue} a_j^{[\ell]}}$''
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{network notation}
+
+\begin{center}
+\includegraphics[height=40mm]{figs/weight-notation}
+\end{center}
+
+\only<1>{
+\begin{itemize}
+\item assumption made \emph{here}: the network is \alert{feed-forward}, and edges only connect consecutive layers
+    \begin{itemize}
+    \item[$\circ$] in language of graph theory: connected, directed acyclic graph (DAG) which is equal to its own transitive reduction \dots I think
+    \item[$\circ$] versus \alert{recurrent}
+    \end{itemize}
+\end{itemize}
+}
+\only<2>{
+\begin{itemize}
+\item weight ${ \color{ForestGreen} w_{jk}^{[\ell]} }$ on the edge from neuron ${\color{blue} a_k^{[\ell-1]}}$ to neuron ${\color{blue} a_j^{[\ell]}}$
+\item thus
+    $${\color{blue} a_j^{[\ell]}} = \sigma\left(\sum_{k=1}^{n_{\ell-1}} {\color{ForestGreen} w_{jk}^{[\ell]}} {\color{blue} a_k^{[\ell-1]}} + b_j\right)$$
+\item which suggests matrix multiplication!
+\end{itemize}
+}
+\end{frame}
+
+
+\begin{frame}{vector/matrix network notation}
+
+\begin{center}
+\includegraphics[height=40mm]{figs/weight-notation}
+\end{center}
+
+\begin{itemize}
+\item one row vector $w^\top$ of weights for each neuron, thus many neurons deserve a matrix:
+    $${\color{ForestGreen} W^{[\ell]}} = \left(\text{weights into layer $\ell$}\right) = \begin{bmatrix} {\color{ForestGreen} w_{jk}^{[\ell]}} \end{bmatrix} \quad \text{is } n_{\ell}\times n_{\ell-1}$$
+\item assume $\sigma$ applied entrywise, thus
+    $${\color{blue} a^{[\ell]}} = \sigma\left({\color{ForestGreen} W^{[\ell]}} {\color{blue} a^{[\ell-1]}} + b^{[\ell]}\right)$$
+with $b^{[\ell]} \in \RR^{n_{\ell}}$
 \end{itemize}
 \end{frame}
 
@@ -301,26 +357,26 @@ is a function $a:\RR^n \to \RR^1$
 \begin{frame}{forward pass = nonlinear-ized matrix multiplication}
 
 \begin{center}
-\includegraphics[height=25mm]{figs/state-notation}
+\includegraphics[height=25mm]{figs/weight-notation}
 \end{center}
 
 \begin{itemize}
-\item $w^\top$ is a row vector \dots one for each neuron
-\item many neurons gives matrix multiplication:
-    $$W = \begin{bmatrix} w_{11}
-    \end{bmatrix}$$
-\item $\sigma$ applied entrywise
-\item FIXME
+\item for this small $L=4$ network:
+\begin{align*}
+y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
+            &= \sigma\left(W^{[4]} \sigma\left(W^{[3]} \sigma\left(W^{[2]} a^{[1]} + b^{[2]}\right) + b^{[3]}\right) + b^{[4]}\right) \\
+            &= \sigma\left(W^{[4]} \sigma\left(W^{[3]} \sigma\left(W^{[2]} x + b^{[2]}\right) + b^{[3]}\right) + b^{[4]}\right)
+\end{align*}
+\item if $\sigma(z)=z$ and $b^{[\ell]}=0$ then $y = W^{[4]} W^{[3]} W^{[2]} x$
+\item feed-forward network = nonlinear \& affine matrix multiplication
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{fixme}
-
-\includegraphics[height=25mm]{figs/weight-notation}
+\begin{frame}{computation work model}
 
 \begin{itemize}
-\item latex
+\item x
 \item beamer
 \end{itemize}
 \end{frame}
