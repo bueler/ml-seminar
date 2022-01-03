@@ -410,20 +410,29 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \end{frame}
 
 
-\begin{frame}{general forward-pass neural network formulas}
+\begin{frame}{forward-pass neural network formulas}
 
 \begin{itemize}
-\item the general formulas are equations (3.1), (3.2) in HH19
-\item we act on an input vector $x$ to give an output vector $y$:
-\begin{align*}
-a^{[1]} &= x \in \RR^{n_1} \\
-a^{[\ell]} &= \sigma\left(W^{[\ell]} a^{[\ell-1]} + b^{[\ell]}\right) \in \RR^{n_\ell} \qquad \text{for } \ell=2,3,\dots,L \\
-y &= a^{[L]}
-\end{align*}
-\item a forward pass is an obvious \texttt{for} loop, given
+\item input $x = a^{[1]} \in \RR^{n_1}$ to output $y = a^{[L]} \in \RR^{n_L}$ by layers:
+    $$a^{[\ell]} = \sigma\left(W^{[\ell]} a^{[\ell-1]} + b^{[\ell]}\right) \in \RR^{n_\ell} \qquad \text{for } \ell=2,3,\dots,L$$
+
     \begin{itemize}
-    \item[$\circ$] weights $\{W^{[\ell]}\}$ and biases $\{b^{[\ell]}\}$ stored in some data structure
-    \item[$\circ$] $\sigma(z)$ implemented as a \texttt{function}
+    \item[$\circ$] equation (3.2) in HH19
+    \end{itemize}
+\item such a forward pass is an obvious loop:
+
+\begin{pseudo*}
+\pr{forward}(x)\text{:} \\+
+    $a^{[1]} = x$ \\
+    for $\ell = 2,3,\dots,L$ \\+
+        $z^{[\ell]} = W^{[\ell]} a^{[\ell-1]} + b^{[\ell]}$ \\
+        $a^{[\ell]} = \sigma\left(z^{[\ell]}\right)$ \\-
+    return $y=a^{[L]}$
+\end{pseudo*}
+
+    \begin{itemize}
+    \item[$\circ$] $\{W^{[\ell]}\}$ and $\{b^{[\ell]}\}$ are stored in some data structure
+    \item[$\circ$] $\sigma(z)$ is implemented entrywise
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -456,7 +465,7 @@ y &= a^{[L]}
 \end{frame}
 
 
-\section{training is merely optimization}
+\section{training is optimization}
 
 \begin{frame}{Outline}
   \tableofcontents[hideallsubsections,currentsection]
@@ -608,7 +617,7 @@ to ``nonlinear least-squares'' in a standard optimization textbook (Nocedal \& W
 \item recall:
    $$p = \{W^{[2]},W^{[3]},\dots,W^{[L]},b^{[2]},b^{[3]},\dots,b^{[L]}\}$$
 collects all weight matrices and biases into one big vector
-\item \alert{the cost for one data pair is a function of} $p$:
+\item the \alert{cost} for one data pair \alert{is a function of} $p$:
     $$C^{\{i\}}(p) = \frac{1}{2} \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}})\right\|_2^2$$
 \item that is, always remember:
 
@@ -666,7 +675,7 @@ given parameters $p$, one forward pass through the network is needed to evaluate
 \begin{itemize}
 \item GD is simple to program
     \begin{itemize}
-    \item[$\circ$] \dots and it will always let you down
+    \item[$\circ$] \dots but it will always let you down
     \end{itemize}
 \item known issues with naive GD:
     \begin{itemize}
@@ -711,17 +720,23 @@ given parameters $p$, one forward pass through the network is needed to evaluate
 
 \begin{itemize}
 \item GD is widely used for training in \alert{machine learning} (ML)
+    \begin{itemize}
+    \item[$\circ$] a seminar priority: GD's limitations, improvements, alternatives?
+    \end{itemize}
+
+\medskip
 \item ML applies 2 ``insights'' (\emph{habits}?) about how GD should work:
     \begin{enumerate}
-    \item \alert{stochastic gradient descent}: since $N$ is big, we do \emph{not} compute $\grad C^{\{i\}}(p)$, but only a randomly chosen $\grad C^{\{i\}}(p)$
+    \item \alert{stochastic gradient descent}: since $N$ is big, do \emph{not} compute the whole gradient $\grad C(p)$, but instead a randomly chosen $\grad C^{\{i\}}(p)$
         \begin{itemize}
-        \item[$\circ$] i.e.~choose data $(x^{\{i\}},y^{\{i\}})$ and descend the corresponding cost:
+        \item[$\circ$] i.e.~choose data $(x^{\{i\}},y^{\{i\}})$ and do
             $$p \gets p - \eta \grad C^{\{i\}}(p)$$
-        \item[$\circ$] or a choose few pairs, a \alert{batch}: $p \gets p - \eta \sum_{i=1}^m \grad C^{\{k_i\}}(p)$
+        \item[$\circ$] or a choose a \alert{batch}: $p \gets p - \eta \frac{1}{m} \sum_{i=1}^m \grad C^{\{k_i\}}(p)$
         \end{itemize}
-    \item \alert{back-propagation}: when computing $\grad C^{\{i\}}(p)$ we regard the chain rule as information (``nudges'') feeding backward through the network
+    \item \alert{back-propagation}: when computing $\grad C^{\{i\}}(p)$, regard the chain rule as information feeding backward through the network
         \begin{itemize}
-        \item[$\circ$] back-propagation occurs after a forward pass, which computes $C^{\{i\}}(p)$
+        \item[$\circ$] back-propagation occurs after a forward pass for $C^{\{i\}}(p)$
+        \item[$\circ$] in ML language: information = ``nudges''
         \end{itemize}
     \end{enumerate}
 \end{itemize}
@@ -749,13 +764,20 @@ st-left=, st-right=
     \end{itemize}
 \item variations:
     \begin{itemize}
-    \item[$\circ$] without-replacement $i$
+    \item[$\circ$] choose $i$ without-replacement
     \item[$\circ$] batching
     \item[$\circ$] \alert{online}
     \end{itemize}
-\item but we want $\grad C^{\{i\}}(p)$ from back-propagation \dots chain rule time!
+\item but $\grad C^{\{i\}}(p)$ is by back-propagation \dots time for the chain rule!
 \end{itemize}
 
+\end{frame}
+
+
+\section{backward through a neural net}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
 \end{frame}
 
 
@@ -797,10 +819,26 @@ st-left=, st-right=
 \end{frame}
 
 
-\section{backward through a neural net}
+\begin{frame}{back-propagation $=$ chain rule}
 
-\begin{frame}{Outline}
-  \tableofcontents[hideallsubsections,currentsection]
+\begin{itemize}
+\item recall $p = \{W^{[2]},W^{[3]},\dots,W^{[L]},b^{[2]},b^{[3]},\dots,b^{[L]}\}$ is a grab-bag of $s$ parameters
+\item recall cost for data $(x^{\{i\}},y^{\{i\}})$:  \qquad \small $\displaystyle C^{\{i\}}(p) = \frac{1}{2} \left\|y^{\{i\}} - a^{[L]}\right\|_2^2$ \normalsize
+\item want: \qquad \small  $\displaystyle \grad C^{\{i\}}(p) = \left[\frac{\partial C^{\{i\}}}{\partial p_1},\dots,\frac{\partial C^{\{i\}}}{\partial p_s}\right]^\top$ \normalsize
+
+\medskip
+\item components of the gradient come in two types:
+    $$\frac{\partial C^{\{i\}}}{\partial w_{jk}^{[\ell]}}, \quad \frac{\partial C^{\{i\}}}{\partial b_j^{[\ell]}}$$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{fixme}
+
+\begin{itemize}
+\item latex
+\item beamer
+\end{itemize}
 \end{frame}
 
 
