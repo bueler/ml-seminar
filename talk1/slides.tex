@@ -420,15 +420,13 @@ y &= a^{[L]}
 \begin{frame}{forward-pass computation work model (\emph{minor point})}
 
 \begin{itemize}
-\item forward-pass work is all in the matrix multiplications
-    \begin{itemize}
-    \item[$\circ$] here work $=$ number of floating-point operations
-    \end{itemize}
+\item \alert{work} $=$ number of floating-point operations
 \item work at layer $\ell$:
     $$2 n^{[\ell-1]} n^{[\ell]} + O(n^{[\ell]}) = O(n^{[\ell-1]} n^{[\ell]})$$
 
     \begin{itemize}
     \item[$\circ$] evaluating activation functions is cheap
+    \item[$\circ$] forward-pass work is basically just matrix multiplications
     \end{itemize}
 \item let $n_{\text{max}} =\max\{n^{[\ell]}\}$, the maximum layer size
 \item total forward-pass work:
@@ -453,7 +451,7 @@ y &= a^{[L]}
 \end{frame}
 
 
-\begin{frame}{``training'' is a biologically-motivated procedure}
+\begin{frame}{training is a biologically-motivated procedure}
 
 \begin{itemize}
 \item imagine teaching your dog to read numbers 1,2,3:
@@ -479,7 +477,7 @@ y &= a^{[L]}
 \end{frame}
 
 
-\begin{frame}{``training'' is a biologically-motivated procedure}
+\begin{frame}{training is a biologically-motivated procedure}
 
 \begin{itemize}
 \item biological learning can last from hours to decades
@@ -500,34 +498,75 @@ y &= a^{[L]}
 \begin{frame}{artificial neurons as a model of real neurons}
 
 \begin{itemize}
-\item we replace all the above biological complexity with a simplified artificial neuron:
+\item biological realism is \emph{not} needed for machine learning
+\item replace with a simplified artificial neuron:
 
 \begin{center}
 \includegraphics[width=0.3\textwidth]{figs/b-single-neuron}
 \end{center}
 
     \begin{itemize}
-    \item[$\circ$] the model is merely a formula: \quad $\displaystyle {\color{red} a} = \sigma\left(\sum_{k=1}^{n} {\color{blue} w_{k}} x_k + {\color{ForestGreen} b}\right)$
+    \item[$\circ$] the model is merely a formula: \quad $\displaystyle {\color{red} a} = \sigma\left(\sum_{k=1}^{n} {\color{blue} w_{k}} v_k + {\color{ForestGreen} b}\right)$
     \end{itemize}
 \item training will make ``permanent'' changes in the weights ${\color{blue} w_k}$ and biases ${\color{ForestGreen} b}$
-\item after training, forward passes are ``learned behavior''
+\item after training, forward passes are the network's ``learned behavior''
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{training?}
+\begin{frame}{how does training work?}
 
 \begin{itemize}
 \item so, how does training work in artificial neural networks?
+\item only considering \alert{supervised training} here
 \item given: $N$ pieces of \alert{labeled data} (pairs)
     $$(x^{\{i\}}, y^{\{i\}}) \qquad \text{for } i=1,\dots,N$$
 
     \begin{itemize}
-    \item[$\circ$] $x^{\{i\}} \in \RR^{n_1}$ and $y^{\{i\}} \in \RR^{n_L}$
+    \item[$\circ$] $x^{\{i\}} \in \RR^{n_1}$ are the \alert{data}
+    \item[$\circ$] $y^{\{i\}} \in \RR^{n_L}$ are the \alert{labels}
+        \begin{itemize}
+        \item note that the labeled data determine the number of neurons in the first and last layers
+        \end{itemize}
+    \item[$\circ$] in a \alert{classification task}, the $y^{\{i\}}$ only take on finitely-many pre-specified values
+        \begin{itemize}
+        \item e.g.~$y^{\{i\}} = [1,\, 0]^\top$ and $y^{\{i\}} = [0,\, 1]^\top$ are the only possibilities in the classification task later
+        \end{itemize}
     \end{itemize}
-\item we will choose weights all the $W^{[\ell]}$ and biases $b^{[\ell]}$ in all the layers so as to approximately minimize
-    $$\text{Cost} = \frac{1}{N} \sum_{i=1}^N \frac{1}{2} \|y^{i} - a^{[L]}(x^{\{i\}})\|_2^2$$
-where $a^{[L]}(x^{\{i\}})$ is the output layer activation from a forward pass with inputs $x^{\{i\}}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{how does training work?}
+
+\begin{itemize}
+\item \alert{supervised training} means choosing the weights $W^{[\ell]}$ and biases $b^{[\ell]}$, in \emph{all} the layers, so as to approximately minimize the \alert{average misfit} between the the network output for the each data vector and the corresponding (\alert{correct}) label vector
+\item using the squared $2$-norm for the misfit, this is a formula:
+    $$\text{Cost} = \frac{1}{N} \sum_{i=1}^N \frac{1}{2} \|y^{\{i\}} - a^{[L]}(x^{\{i\}})\|_2^2$$
+
+    \begin{itemize}
+    \item[$\circ$] $a^{[L]}(x^{\{i\}})$ denotes the output-layer activation from a forward pass with input $x^{\{i\}}$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{better training notation}
+
+\begin{itemize}
+\item let's give all the parameters a single-letter name:
+   $$p = \{W^{[2]},W^{[3]},\dots,W^{[L]},b^{[2]},b^{[3]},\dots,b^{[L]}\}$$
+
+    \begin{itemize}
+    \item[$\circ$] $p$ collects all weight matrices and biases into one big column vector
+    \end{itemize}
+\item define the cost (misfit) of the network for a single labeled data pair:
+    $$C^{\{i\}}(p) = \frac{1}{2} \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}})\right\|_2^2$$
+
+    \begin{itemize}
+    \item[$\circ$] $1/2$ is a convenience constant
+    \end{itemize}
+\item let $C(p)$ be the total \alert{cost functional}, or \alert{objective}, namely the \alert{average} misfit over all the labeled data:
+    $$C(p) = \frac{1}{N} \sum_{i=1}^N C^{\{i\}}(p) = \frac{1}{2N} \sum_{i=1}^N \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}})\right\|_2^2$$
 \end{itemize}
 \end{frame}
 
@@ -535,19 +574,31 @@ where $a^{[L]}(x^{\{i\}})$ is the output layer activation from a forward pass wi
 \begin{frame}{training $=$ nonlinear least-squares optimization}
 
 \begin{itemize}
-\item it is worthwhile to clarify notation
-\item let $W = \{W^{[\ell]}\}_{\ell=2}^L$ be the collection of all weight matrices and $b=\{b^{[\ell]}\}_{\ell=2}^L$ the collection of all bias vectors
-\item $C(W,b)$ is the \alert{cost functional} or \alert{objective}:
-    $$C(W,b) = \frac{1}{N} \sum_{i=1}^N \frac{1}{2} \|y^{i} - a^{[L]}(x^{\{i\}})\|_2^2$$
+\item compare
+    $$C(p) = \frac{1}{2N} \sum_{i=1}^N \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}})\right\|_2^2$$
+to ``nonlinear least-squares'' in a standard optimization textbook (Nocedal \& Wright, 2006; Chapter 10):
 
+\vspace{-2mm}
+\begin{center}
+\includegraphics[width=0.95\textwidth]{figs/nonlinearleastsquares}
+\end{center}
+
+\medskip
+\item training a neural net is \alert{nonlinear least-squares optimization}
     \begin{itemize}
-    \item[$\circ$] constant $1/N$ allows us to think of it as the average cost per data pair
-    \item[$\circ$] constant $1/2$ is merely a convenience constant
+    \item[$\circ$] $y^{\{i\}} - a^{[L]}(x^{\{i\}})$ is the \alert{residual vector} for $i$th data
+    \item[$\circ$] it becomes zero when the network fully-learns the $i$th data
     \end{itemize}
-\item thus training a neural net is \alert{nonlinear least-squares optimization}
 \end{itemize}
 \end{frame}
 
+
+\begin{frame}{buzzwords}
+
+\begin{itemize}
+\item \alert{deep learning} if $L>2$
+\end{itemize}
+\end{frame}
 
 \section{backward through a neural net}
 
