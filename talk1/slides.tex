@@ -398,10 +398,29 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \end{frame}
 
 
-\begin{frame}{forward pass computation work model (\emph{minor point})}
+\begin{frame}{general forward-pass neural network formulas}
 
 \begin{itemize}
-\item forward pass work is all in the matrix multiplications
+\item the general formulas are equations (3.1), (3.2) in HH19
+\item we act on an input vector $x$ to give an output vector $y$:
+\begin{align*}
+a^{[1]} &= x \in \RR^{n_1} \\
+a^{[\ell]} &= \sigma\left(W^{[\ell]} a^{[\ell-1]} + b^{[\ell]}\right) \in \RR^{n_\ell} \qquad \text{for } \ell=2,3,\dots,L \\
+y &= a^{[L]}
+\end{align*}
+\item a forward pass is an obvious \texttt{for} loop, given
+    \begin{itemize}
+    \item[$\circ$] weights $\{W^{[\ell]}\}$ and biases $\{b^{[\ell]}\}$ stored in some data structure
+    \item[$\circ$] $\sigma(z)$ implemented as a \texttt{function}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{forward-pass computation work model (\emph{minor point})}
+
+\begin{itemize}
+\item forward-pass work is all in the matrix multiplications
     \begin{itemize}
     \item[$\circ$] here work $=$ number of floating-point operations
     \end{itemize}
@@ -411,12 +430,12 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
     \begin{itemize}
     \item[$\circ$] evaluating activation functions is cheap
     \end{itemize}
-\item let $N=\max\{n^{[\ell]}\}$, the maximum layer size
+\item let $n_{\text{max}} =\max\{n^{[\ell]}\}$, the maximum layer size
 \item total forward-pass work:
-    $$\sum_{\ell=2}^L O(n^{[\ell-1]} n^{[\ell]}) = O(L N^2)$$
+    $$\sum_{\ell=2}^L O(n^{[\ell-1]} n^{[\ell]}) = O(L n_{\text{max}}^{\,2})$$
 
     \begin{itemize}
-    \item[$\circ$] using big-O in the ``$N\to\infty$'' limit of big layers
+    \item[$\circ$] using big-O in the ``$n_{\text{max}} \to \infty$'' limit of big layers
     \item[$\circ$] asymptotically same cost as $L$ matrix-vector products
     \item[$\circ$] easily computed by GPU hardware
         \begin{itemize}
@@ -481,14 +500,14 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \begin{frame}{artificial neurons as a model of real neurons}
 
 \begin{itemize}
-\item we replace all the above biological complexity with a simplified artificial neuron
+\item we replace all the above biological complexity with a simplified artificial neuron:
 
 \begin{center}
 \includegraphics[width=0.3\textwidth]{figs/b-single-neuron}
 \end{center}
 
     \begin{itemize}
-    \item[$\circ$] i.e.~the model is merely a formula: \quad $\displaystyle {\color{red} a} = \sigma\left(\sum_{k=1}^{n} {\color{blue} w_{k}} x_k + {\color{ForestGreen} b}\right)$
+    \item[$\circ$] the model is merely a formula: \quad $\displaystyle {\color{red} a} = \sigma\left(\sum_{k=1}^{n} {\color{blue} w_{k}} x_k + {\color{ForestGreen} b}\right)$
     \end{itemize}
 \item training will make ``permanent'' changes in the weights ${\color{blue} w_k}$ and biases ${\color{ForestGreen} b}$
 \item after training, forward passes are ``learned behavior''
@@ -496,10 +515,36 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \end{frame}
 
 
-\begin{frame}{training $=$ nonlinear least-squares optimization}
+\begin{frame}{training?}
 
 \begin{itemize}
 \item so, how does training work in artificial neural networks?
+\item given: $N$ pieces of \alert{labeled data} (pairs)
+    $$(x^{\{i\}}, y^{\{i\}}) \qquad \text{for } i=1,\dots,N$$
+
+    \begin{itemize}
+    \item[$\circ$] $x^{\{i\}} \in \RR^{n_1}$ and $y^{\{i\}} \in \RR^{n_L}$
+    \end{itemize}
+\item we will choose weights all the $W^{[\ell]}$ and biases $b^{[\ell]}$ in all the layers so as to approximately minimize
+    $$\text{Cost} = \frac{1}{N} \sum_{i=1}^N \frac{1}{2} \|y^{i} - a^{[L]}(x^{\{i\}})\|_2^2$$
+where $a^{[L]}(x^{\{i\}})$ is the output layer activation from a forward pass with inputs $x^{\{i\}}$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{training $=$ nonlinear least-squares optimization}
+
+\begin{itemize}
+\item it is worthwhile to clarify notation
+\item let $W = \{W^{[\ell]}\}_{\ell=2}^L$ be the collection of all weight matrices and $b=\{b^{[\ell]}\}_{\ell=2}^L$ the collection of all bias vectors
+\item $C(W,b)$ is the \alert{cost functional} or \alert{objective}:
+    $$C(W,b) = \frac{1}{N} \sum_{i=1}^N \frac{1}{2} \|y^{i} - a^{[L]}(x^{\{i\}})\|_2^2$$
+
+    \begin{itemize}
+    \item[$\circ$] constant $1/N$ allows us to think of it as the average cost per data pair
+    \item[$\circ$] constant $1/2$ is merely a convenience constant
+    \end{itemize}
+\item thus training a neural net is \alert{nonlinear least-squares optimization}
 \end{itemize}
 \end{frame}
 
