@@ -171,21 +171,14 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \end{frame}
 
 
-\begin{frame}{Outline}
-  \tableofcontents[hideallsubsections]
-\end{frame}
-
-
-\section{seminar logistics}
-
-\begin{frame}{\emph{participant}-driven seminar}
+\begin{frame}{\emph{participant}-driven seminar logistics}
 
 \begin{itemize}
 \item sign-up sheet!
-\item webpages:
+\item my existing webpages:
     \begin{itemize}
     \item[$\circ$] \href{http://bueler.github.io/M692S22/index.html}{\texttt{bueler.github.io/M692S22}}
-    \item[$\circ$] \href{http://bueler.github.io/M692S22/resources.htm}{\texttt{bueler.github.io/M692S22/resources.htm}}
+    \item[$\circ$] \href{https://github.com/bueler/ml-seminar}{\texttt{github.com/bueler/ml-seminar}}
     \end{itemize}
 \item in-person or hybrid?
     \begin{itemize}
@@ -200,6 +193,10 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \end{frame}
 
 
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections]
+\end{frame}
+
 \section{a single artificial neuron}
 
 \begin{frame}{one artificial neuron $=$ nonlinear-ized inner product}
@@ -208,7 +205,7 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \begin{column}{0.55\textwidth}
 \begin{itemize}
 \item given (column) vectors $v,w \in \RR^n$
-\item inner product
+\item recall \emph{inner product}:
     $$\ip{{\color{blue} w}}{v} = {\color{blue} w}^\top v = \sum_{j=1}^n {\color{blue} w_j} v_j$$
 \item apply a nonlinear function $\sigma: \RR^1 \to \RR^1$:
 \only<1>{
@@ -222,14 +219,35 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \end{equation*}
 }
     \begin{itemize}
-    \item<2>[$\circ$] add a \alert{bias} ${\color{ForestGreen} b} \in \RR^1$
-    \item[$\circ$] that's it! an \alert{artificial neuron}
+    \item<2>[$\circ$] detail: add a bias ${\color{ForestGreen} b} \in \RR^1$
+    \item<2>[$\circ$] that's it! an \alert{artificial neuron}
     \end{itemize}
 \end{itemize}
 \end{column}
 \begin{column}{0.45\textwidth}
 \only<1>{\includegraphics[width=\textwidth]{figs/single-neuron}}
 \only<2>{\includegraphics[width=\textwidth]{figs/b-single-neuron}}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}{neuron roles}
+
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{itemize}
+\item $v$ is input
+\item \alert{weights} ${\color{blue} w}$ and \alert{biases} ${\color{ForestGreen} b}$ are parameters
+    \begin{itemize}
+    \item[$\circ$] they need \alert{training}
+    \end{itemize}
+\item the \alert{activation function} $\sigma$ is fixed
+\item the output ${\color{red} a}$ is the \alert{activation} of the neuron
+\end{itemize}
+\end{column}
+\begin{column}{0.45\textwidth}
+\includegraphics[width=\textwidth]{figs/b-single-neuron}
 \end{column}
 \end{columns}
 \end{frame}
@@ -253,35 +271,23 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \end{frame}
 
 
-\begin{frame}{neuron roles}
+\begin{frame}{a trained neuron}
 
 \begin{columns}
 \begin{column}{0.55\textwidth}
-\only<1>{
 \begin{itemize}
-\item $v$ is input
-\item $\sigma$ is fixed
-\item $a$ is the \alert{activation} of the neuron
-\item $w,b$ are parameters
-    \begin{itemize}
-    \item[$\circ$] these parameters need \alert{training}
-    \end{itemize}
-\end{itemize}
-}
-\only<2>{
-\begin{itemize}
-\item a \alert{trained neuron} is one with fixed parameters $w,b$
-\item function $a:\RR^n \to \RR^1$:
-    $$a = \sigma(v)$$
+\item a \alert{trained neuron} is one with known parameters $w,b$
+\item so $a:\RR^n \to \RR^1$ is a known function:
+    $${\color{red} a} = \sigma(v)$$
 
     \begin{itemize}
     \item[$\circ$] similar cost to inner product
     \item[$\circ$] backward stable
     \end{itemize}
-\item one might write:
-    $$a = \sigma(v;w,b)$$
+\item one might write
+    $${\color{red} a} = \sigma(v;{\color{blue} w},{\color{ForestGreen} b})$$
+to make dependence on parameters clear
 \end{itemize}
-}
 \end{column}
 \begin{column}{0.45\textwidth}
 \includegraphics[width=\textwidth]{figs/b-single-neuron}
@@ -296,20 +302,40 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
   \tableofcontents[hideallsubsections,currentsection]
 \end{frame}
 
+
+\begin{frame}{feed-forward networks}
+
+\begin{center}
+\includegraphics[height=30mm]{figs/network}
+\end{center}
+
+\begin{itemize}
+\item assumption made here: considering only \alert{feed-forward} networks
+    \begin{itemize}
+    \item[$\circ$] edges only connect consecutive layers, in order
+    \item[$\circ$] in language of graph theory: connected, directed acyclic graph (DAG) which is equal to its own transitive reduction \dots I think
+    \item[$\circ$] \alert{feed-forward} versus \alert{recurrent}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{network notation}
 
 \begin{center}
-\includegraphics[height=40mm]{figs/state-notation}
+\includegraphics[height=35mm]{figs/state-notation}
 \end{center}
 
 \begin{itemize}
 \item notation from HH19
 \item ${\color{red} n_\ell}$ is number of neurons in layer $\ell=1,\dots,L$
     \begin{itemize}
-    \item[$\circ$] $\ell=1$ is \alert{input} layer (for passing-in values $x = {\color{blue} a^{[1]}} \in \RR^{{\color{red} n_1}}$)
+    \item[$\circ$] $\ell=1$ is \alert{input} layer
+    \item[$\circ$] input values equal first-layer activations: $x = {\color{blue} a^{[1]}} \in \RR^{{\color{red} n_1}}$)
     \item[$\circ$] $\ell=L$ is \alert{output} layer
+    \item[$\circ$] output values equal $L$th-layer activations: $y = {\color{blue} a^{[L]}} \in \RR^{{\color{red} n_L}}$)
     \end{itemize}
-\item activations from layer $\ell$ are a vector ${\color{blue} a^{[\ell]}} \in \RR^{{\color{red} n_\ell}}$
+\item activations in layer $\ell$ form a vector ${\color{blue} a^{[\ell]}} \in \RR^{{\color{red} n_\ell}}$
     \begin{itemize}
     \item[$\circ$] ${\color{blue} a_j^{[\ell]}}$ is activation of neuron $j$ in layer $\ell$
     \item[$\circ$] we label a neuron by its activation: ``neuron ${\color{blue} a_j^{[\ell]}}$''
@@ -318,44 +344,37 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \end{frame}
 
 
-\begin{frame}{network notation}
+\begin{frame}{weight notation}
 
 \begin{center}
 \includegraphics[height=40mm]{figs/weight-notation}
 \end{center}
 
-\only<1>{
-\begin{itemize}
-\item assumption made \emph{here}: the network is \alert{feed-forward}, and edges only connect consecutive layers
-    \begin{itemize}
-    \item[$\circ$] in language of graph theory: connected, directed acyclic graph (DAG) which is equal to its own transitive reduction \dots I think
-    \item[$\circ$] versus \alert{recurrent}
-    \end{itemize}
-\end{itemize}
-}
-\only<2>{
 \begin{itemize}
 \item weight ${ \color{ForestGreen} w_{jk}^{[\ell]} }$ on the edge from neuron ${\color{blue} a_k^{[\ell-1]}}$ to neuron ${\color{blue} a_j^{[\ell]}}$
 \item thus
     $${\color{blue} a_j^{[\ell]}} = \sigma\left(\sum_{k=1}^{n_{\ell-1}} {\color{ForestGreen} w_{jk}^{[\ell]}} {\color{blue} a_k^{[\ell-1]}} + b_j\right)$$
-\item which suggests matrix multiplication!
+\item which suggests matrix-vector multiplication!
 \end{itemize}
-}
 \end{frame}
 
 
-\begin{frame}{vector/matrix network notation}
+\begin{frame}{weight notation using vectors and matrices}
 
 \begin{center}
-\includegraphics[height=40mm]{figs/weight-notation}
+\includegraphics[height=35mm]{figs/weight-notation}
 \end{center}
 
 \begin{itemize}
-\item one row vector $w^\top$ of weights for each neuron, thus many neurons deserve a matrix:
-    $${\color{ForestGreen} W^{[\ell]}} = \left(\text{weights into layer $\ell$}\right) = \begin{bmatrix} {\color{ForestGreen} w_{jk}^{[\ell]}} \end{bmatrix} \quad \text{is } n_{\ell}\times n_{\ell-1}$$
-\item assume $\sigma$ applied entrywise, thus
+\item one row vector ${\color{ForestGreen} w^\top}$ of weights for each neuron
+\item neurons in a layer deserve a matrix:
+    $${\color{ForestGreen} W^{[\ell]}} = \left(\text{weights into layer $\ell$}\right) = \begin{bmatrix} {\color{ForestGreen} w_{jk}^{[\ell]}} \end{bmatrix}$$
+
+    \begin{itemize}
+    \item[$\circ$] ${\color{ForestGreen} W^{[\ell]}}$ is $n_{\ell}\times n_{\ell-1}$
+    \end{itemize}
+\item assume $\sigma$ applied entrywise, thus with biases $b^{[\ell]} \in \RR^{n_{\ell}}$,
     $${\color{blue} a^{[\ell]}} = \sigma\left({\color{ForestGreen} W^{[\ell]}} {\color{blue} a^{[\ell-1]}} + b^{[\ell]}\right)$$
-with $b^{[\ell]} \in \RR^{n_{\ell}}$
 \end{itemize}
 \end{frame}
 
@@ -408,11 +427,12 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \end{frame}
 
 
-\section{training is merely(?) optimization}
+\section{training is merely optimization}
 
 \begin{frame}{Outline}
   \tableofcontents[hideallsubsections,currentsection]
 \end{frame}
+
 
 \begin{frame}{``training'' is a biologically-motivated procedure}
 
@@ -421,31 +441,66 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \begin{center}
 \includegraphics[width=0.7\textwidth]{figs/onetwothree}
 \end{center}
+\item example training procedure:
+    \begin{enumerate}
+    \item randomly present one image of a digit from above
+\begin{center}
+\includegraphics[width=0.1\textwidth]{figs/two} \phantom{dlasbj sadkf adsk}
+\end{center}
+    \item if dog barks correct number of times then gets treat
+
+\vspace{5mm}
+\hspace{10mm} \emph{bark! bark!} \qquad $\implies$
+
+\vspace{-6mm}
+\hfill \includegraphics[width=0.15\textwidth]{figs/dogtreat} \hspace{25mm} \phantom{boo}
+    \item otherwise move on to next image
+    \end{enumerate}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{``training'' is a biologically-motivated procedure}
+
+\begin{itemize}
+\item biological learning can last from hours to decades
+\item something permanent changes within the brain
     \begin{itemize}
-    \item[$\circ$] present one image of a digit from above
-    \item[$\circ$] if dog barks correct number of times then gets treat
-    \item[$\circ$] otherwise move on to next image
+    \item[$\circ$] neuron excitation is electrical (activation is temporary)
+    \item[$\circ$] neuron count is relatively fixed
+    \item[$\circ$] in learning, there are chemical or morpological changes in connections between neurons, the \alert{synapses} where an axon connects to another neuron's dendrite
     \end{itemize}
 \end{itemize}
 
-\begin{columns}
-\begin{column}{0.6\textwidth}
+\begin{center}
+\mbox{\includegraphics[width=0.5\textwidth]{figs/physicalneuron} \includegraphics[width=0.4\textwidth]{figs/synapse}}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{artificial neurons as a model of real neurons}
+
 \begin{itemize}
-\item we observe that for dogs (and people) the learning ``sticks''
+\item we replace all the above biological complexity with a simplified artificial neuron
+
+\begin{center}
+\includegraphics[width=0.3\textwidth]{figs/b-single-neuron}
+\end{center}
+
     \begin{itemize}
-    \item[$\circ$] lasts for days, weeks, years?
+    \item[$\circ$] i.e.~the model is merely a formula: \quad $\displaystyle {\color{red} a} = \sigma\left(\sum_{k=1}^{n} {\color{blue} w_{k}} x_k + {\color{ForestGreen} b}\right)$
     \end{itemize}
-\item something changes chemically (or structurally) within the dog's brain
-    \begin{itemize}
-    \item[$\circ$] neuron numbers (somewhat) fixed
-    \item[$\circ$] chemical changes in connections between neurons
-    \end{itemize}
+\item training will make ``permanent'' changes in the weights ${\color{blue} w_k}$ and biases ${\color{ForestGreen} b}$
+\item after training, forward passes are ``learned behavior''
 \end{itemize}
-\end{column}
-\begin{column}{0.4\textwidth}
-\includegraphics[width=\textwidth]{figs/physicalneuron}
-\end{column}
-\end{columns}
+\end{frame}
+
+
+\begin{frame}{training $=$ nonlinear least-squares optimization}
+
+\begin{itemize}
+\item so, how does training work in artificial neural networks?
+\end{itemize}
 \end{frame}
 
 
@@ -454,6 +509,7 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \begin{frame}{Outline}
   \tableofcontents[hideallsubsections,currentsection]
 \end{frame}
+
 
 \begin{frame}{fixme}
 
@@ -469,6 +525,7 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \begin{frame}{Outline}
   \tableofcontents[hideallsubsections,currentsection]
 \end{frame}
+
 
 \begin{frame}{\emph{Matlab online} instructions: HH19 codes}
 
@@ -502,6 +559,7 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \begin{frame}{Outline}
   \tableofcontents[hideallsubsections,currentsection]
 \end{frame}
+
 
 \begin{frame}{fixme}
 
