@@ -251,6 +251,10 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \end{column}
 \begin{column}{0.45\textwidth}
 \includegraphics[width=\textwidth]{figs/b-single-neuron}
+
+\begin{equation*}
+{\color{red} a} = \sigma\left(\sum_{j=1}^n {\color{blue} w_j} v_j + {\color{ForestGreen} b}\right)
+\end{equation*}
 \end{column}
 \end{columns}
 \end{frame}
@@ -264,12 +268,14 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 
 \begin{itemize}
 \item $\sigma$ is the \alert{activation function}
-\item possibilities:
+    \begin{itemize}
+    \item[$\circ$] an increasing scalar function with bounded derivative
+    \end{itemize}
+\item some possibilities:
     \begin{itemize}
     \item[$\circ$] \alert{sigmoid}, e.g.\qquad $\displaystyle \sigma(z) = \frac{1}{1 + e^{-z}}$ \quad (left)
     \item[$\circ$] \alert{rectified linear unit (ReLU)},\qquad $\displaystyle \sigma(z) = \begin{cases} z, & z > 0 \\ 0, & z \le 0 \end{cases}$ \quad (right)
     \end{itemize}
-\item $\sigma$ is increasing, with bounded derivative
 \end{itemize}
 \end{frame}
 
@@ -280,7 +286,7 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \begin{column}{0.55\textwidth}
 \begin{itemize}
 \item a \alert{trained neuron} is one with known parameters $w,b$
-\item so $a:\RR^n \to \RR^1$ is a known function:
+\item then $a:\RR^n \to \RR^1$ is a known function:
     $${\color{red} a} = \sigma(v)$$
 
     \begin{itemize}
@@ -313,10 +319,10 @@ to make dependence on parameters clear
 \end{center}
 
 \begin{itemize}
-\item assumption made here: considering only \alert{feed-forward} networks
+\item considering only \alert{feed-forward} networks
     \begin{itemize}
-    \item[$\circ$] edges only connect consecutive layers, in order
-    \item[$\circ$] in language of graph theory: connected, directed acyclic graph (DAG) which is equal to its own transitive reduction \dots I think
+    \item[$\circ$] edges connect consecutive layers, in order
+    \item[$\circ$] in language of graph theory: a connected, directed acyclic graph which is equal to its own transitive reduction \dots I think
     \item[$\circ$] \alert{feed-forward} versus \alert{recurrent}
     \end{itemize}
 \end{itemize}
@@ -334,14 +340,13 @@ to make dependence on parameters clear
 \item ${\color{red} n_\ell}$ is number of neurons in layer $\ell=1,\dots,L$
     \begin{itemize}
     \item[$\circ$] $\ell=1$ is \alert{input} layer
-    \item[$\circ$] input values equal first-layer activations: $x = {\color{blue} a^{[1]}} \in \RR^{{\color{red} n_1}}$)
+    \item[$\circ$] input values are first-layer activations: $x = {\color{blue} a^{[1]}} \in \RR^{{\color{red} n_1}}$
     \item[$\circ$] $\ell=L$ is \alert{output} layer
-    \item[$\circ$] output values equal $L$th-layer activations: $y = {\color{blue} a^{[L]}} \in \RR^{{\color{red} n_L}}$)
+    \item[$\circ$] output values are final-layer activations: $y = {\color{blue} a^{[L]}} \in \RR^{{\color{red} n_L}}$
     \end{itemize}
 \item activations in layer $\ell$ form a vector ${\color{blue} a^{[\ell]}} \in \RR^{{\color{red} n_\ell}}$
     \begin{itemize}
     \item[$\circ$] ${\color{blue} a_j^{[\ell]}}$ is activation of neuron $j$ in layer $\ell$
-    \item[$\circ$] we label a neuron by its activation: ``neuron ${\color{blue} a_j^{[\ell]}}$''
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -365,19 +370,23 @@ to make dependence on parameters clear
 \begin{frame}{weight notation using vectors and matrices}
 
 \begin{center}
-\includegraphics[height=35mm]{figs/weight-notation}
+\includegraphics[height=25mm]{figs/weight-notation}
 \end{center}
 
 \begin{itemize}
-\item one row vector ${\color{ForestGreen} w^\top}$ of weights for each neuron
-\item neurons in a layer deserve a matrix:
+\item one (row) vector of weights for each neuron
+\item neurons in one layer are weighted by a matrix:
     $${\color{ForestGreen} W^{[\ell]}} = \left(\text{weights into layer $\ell$}\right) = \begin{bmatrix} {\color{ForestGreen} w_{jk}^{[\ell]}} \end{bmatrix}$$
 
     \begin{itemize}
     \item[$\circ$] ${\color{ForestGreen} W^{[\ell]}}$ is $n_{\ell}\times n_{\ell-1}$
     \end{itemize}
-\item assume $\sigma$ applied entrywise, thus with biases $b^{[\ell]} \in \RR^{n_{\ell}}$,
+\item assume $\sigma$ applied entrywise:
     $${\color{blue} a^{[\ell]}} = \sigma\left({\color{ForestGreen} W^{[\ell]}} {\color{blue} a^{[\ell-1]}} + b^{[\ell]}\right)$$
+
+    \begin{itemize}
+    \item[$\circ$] bias vector $b^{[\ell]} \in \RR^{n_{\ell}}$
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
