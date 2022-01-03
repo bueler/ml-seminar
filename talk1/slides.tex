@@ -611,6 +611,7 @@ given parameters $p$, one forward pass through the network is needed to evaluate
 \medskip
     \begin{itemize}
     \item[$\circ$] forward pass uses input $x^{\{i\}}$
+    \item[$\circ$] from now on we simplify notation: \quad $\displaystyle a^{[L]} = a^{[L]}(x^{\{i\}})$
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -619,10 +620,10 @@ given parameters $p$, one forward pass through the network is needed to evaluate
 \begin{frame}{gradient descent}
 
 \begin{itemize}
-\item our goal is to minimize \quad \small $\displaystyle C(p) = \frac{1}{2N} \sum_{i=1}^N \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}})\right\|_2^2$ \normalsize
+\item our goal is to minimize \quad \small $\displaystyle C(p) = \frac{1}{2N} \sum_{i=1}^N \left\|y^{\{i\}} - a^{[L]}\right\|_2^2$ \normalsize
 \item the function $C(p)$ is differentiable
     \begin{itemize}
-    \item[$\circ$] \emph{why differentiable? what does this assume about the network?}
+    \item[$\circ$] \emph{why? what does this assume about the network?}
     \end{itemize}
 \item \dots thus we can compute the \alert{gradient} $\grad C(p)$
 \item the gradient points \emph{up hill} on the surface $C:\RR^s\to\RR$,
@@ -630,8 +631,8 @@ given parameters $p$, one forward pass through the network is needed to evaluate
 \end{itemize}
 \begin{pseudo*}
 \pr{gd}(p)\text{:} \\+
-    for $i = 1,2,\dots$ \\+
-        $p = p - \eta \grad C(p)$ \\-
+    for $s = 1,2,\dots$ \\+
+        $p \gets p - \eta \grad C(p)$ \\-
     return $p$
 \end{pseudo*}
 
@@ -640,12 +641,12 @@ given parameters $p$, one forward pass through the network is needed to evaluate
 \end{frame}
 
 
-\begin{frame}{gradient descent is miserable}
+\begin{frame}{gradient descent (GD) is miserable}
 
 \begin{pseudo*}
 \pr{gd}(p)\text{:} \\+
-    for $i = 1,2,\dots$ \\+
-        $p = p - \eta \grad C(p)$ \\-
+    for $s = 1,2,\dots$ \\+
+        $p \gets p - \eta \grad C(p)$ \\-
     return $p$
 \end{pseudo*}
 
@@ -654,12 +655,102 @@ given parameters $p$, one forward pass through the network is needed to evaluate
 
 \medskip
 \begin{itemize}
-\item foo
+\item GD is simple to program
+    \begin{itemize}
+    \item[$\circ$] \dots and it will always let you down
+    \end{itemize}
+\item known issues with naive GD:
+    \begin{itemize}
+    \item[$\circ$] it is not clear how far to step, i.e.~how to set $\eta>0$
+        \begin{itemize}
+        \item $C(p)$, $\grad C(p)$ provide no information
+        \item provable convergence requires a \emph{line search} or \emph{trust region} approach,  otherwise $G(p)$ may not even decrease
+        \item $\eta$ is called the \alert{learning rate} in machine learning
+        \end{itemize}
+    \item[$\circ$] if GD converges, it may be to a \emph{local} minimum only
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{buzzword summary (so far)}
+\begin{frame}{gradient computation observations}
+
+\begin{itemize}
+\item[] \qquad \small $\displaystyle C(p) = \frac{1}{N} \sum_{i=1}^N C^{\{i\}}(p), \qquad C^{\{i\}}(p) = \frac{1}{2} \left\|y^{\{i\}} - a^{[L]}\right\|_2^2$ \normalsize
+
+\medskip
+\item $N$ measures the amount of training data; $N$ can be large
+\item gradient = (data-average gradient): \quad \small $\displaystyle \grad C(p) = \frac{1}{N} \sum_{i=1}^N \grad C^{\{i\}}(p)$ \normalsize
+\item gradient for one data pair:
+\begin{align*}
+\grad C^{\{i\}}(p) &= \grad\left[\frac{1}{2} (y^{\{i\}} - a^{[L]})^\top (y^{\{i\}} - a^{[L]})\right] \\
+    &= - \sum_{j=1}^{n_L} (y_j^{\{i\}} - a^{[L]}_j)\, \grad a^{[L]}_j
+\end{align*}
+
+    \begin{itemize}
+    \item[$\circ$] chain rule will be needed!
+        \begin{itemize}
+        \item network output $a_j^{[L]}$ is a \emph{composition} of matrix-vector products and (nonlinear) $\sigma$ applications
+        \end{itemize}
+    \item[$\circ$] how to compute $\grad a^{[L]}_j$ efficiently?
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{GD in machine learning: the 2 insights}
+
+\begin{itemize}
+\item GD is widely used for training in \alert{machine learning} (ML)
+\item ML applies 2 ``insights'' (\emph{habits}?) about how GD should work:
+    \begin{enumerate}
+    \item \alert{stochastic gradient descent}: since $N$ is big, we do \emph{not} compute $\grad C^{\{i\}}(p)$, but only a randomly chosen $\grad C^{\{i\}}(p)$
+        \begin{itemize}
+        \item[$\circ$] i.e.~choose data $(x^{\{i\}},y^{\{i\}})$ and descend the corresponding cost:
+            $$p \gets p - \eta \grad C^{\{i\}}(p)$$
+        \item[$\circ$] or a choose few pairs, a \alert{batch}: $p \gets p - \eta \sum_{i=1}^m \grad C^{\{k_i\}}(p)$
+        \end{itemize}
+    \item \alert{back-propagation}: when computing $\grad C^{\{i\}}(p)$ we regard the chain rule as information (``nudges'') feeding backward through the network
+        \begin{itemize}
+        \item[$\circ$] back-propagation occurs after a forward pass, which computes $C^{\{i\}}(p)$
+        \end{itemize}
+    \end{enumerate}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{stochastic gradient descent (SGD)}
+
+\pseudoset{
+st-left=, st-right=
+}
+
+\begin{pseudo*}
+\pr{sgd}(p)\text{:} \\+
+    for $s = 1,2,\dots$ \\+
+        $i=$ (\st{random uniform from} $\{1,\dots,N\}$) \\
+        $p \gets p - \eta \grad C^{\{i\}}(p)$ \\-
+    return $p$
+\end{pseudo*}
+
+\begin{itemize}
+\item above is \alert{vanilla} SGD
+    \begin{itemize}
+    \item[$\circ$] note $i$ is chosen \emph{with} replacement
+    \end{itemize}
+\item variations:
+    \begin{itemize}
+    \item[$\circ$] without-replacement $i$
+    \item[$\circ$] batching
+    \item[$\circ$] \alert{online}
+    \end{itemize}
+\item but we want $\grad C^{\{i\}}(p)$ from back-propagation \dots chain rule time!
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{interlude: the buzzword list}
 
 \begin{itemize}
 \item \alert{artificial neuron}
@@ -683,8 +774,12 @@ given parameters $p$, one forward pass through the network is needed to evaluate
     \item[$\circ$] nonlinear least-squares optimization
     \end{itemize}
 \item \alert{stochastic gradient descent}
+    \begin{itemize}
+    \item[$\circ$] learning rate
+    \end{itemize}
+\item \alert{back-propagation}
 
-\bigskip
+\hspace{-7mm} \hrulefill
 \item \alert{machine learning}
     \begin{itemize}
     \item[$\circ$] \alert{deep learning} if $L>2$
