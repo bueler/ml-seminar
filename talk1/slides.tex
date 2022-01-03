@@ -28,6 +28,9 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows.meta,decorations.markings,decorations.pathreplacing,fadings,positioning}
 
+\usepackage[kw]{pseudo}
+\pseudoset{left-margin=15mm,topsep=5mm,idfont=\texttt}
+
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
 % the following command:
@@ -554,19 +557,18 @@ y &= a^{[L]}
 
 \begin{itemize}
 \item let's give all the parameters a single-letter name:
-   $$p = \{W^{[2]},W^{[3]},\dots,W^{[L]},b^{[2]},b^{[3]},\dots,b^{[L]}\}$$
+   $$p = \{W^{[2]},W^{[3]},\dots,W^{[L]},b^{[2]},b^{[3]},\dots,b^{[L]}\} \in \RR^s$$
 
     \begin{itemize}
     \item[$\circ$] $p$ collects all weight matrices and biases into one big column vector
     \end{itemize}
-\item define the cost (misfit) of the network for a single labeled data pair:
+\item define the cost (misfit) of the network for one data pair:
     $$C^{\{i\}}(p) = \frac{1}{2} \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}})\right\|_2^2$$
-
-    \begin{itemize}
-    \item[$\circ$] $1/2$ is a convenience constant
-    \end{itemize}
 \item let $C(p)$ be the total \alert{cost functional}, or \alert{objective}, namely the \alert{average} misfit over all the labeled data:
-    $$C(p) = \frac{1}{N} \sum_{i=1}^N C^{\{i\}}(p) = \frac{1}{2N} \sum_{i=1}^N \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}})\right\|_2^2$$
+\begin{align*}
+C(p) &= \frac{1}{N} \sum_{i=1}^N C^{\{i\}}(p) \\
+     &= \frac{1}{2N} \sum_{i=1}^N \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}})\right\|_2^2
+\end{align*}
 \end{itemize}
 \end{frame}
 
@@ -578,27 +580,118 @@ y &= a^{[L]}
     $$C(p) = \frac{1}{2N} \sum_{i=1}^N \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}})\right\|_2^2$$
 to ``nonlinear least-squares'' in a standard optimization textbook (Nocedal \& Wright, 2006; Chapter 10):
 
-\vspace{-2mm}
-\begin{center}
-\includegraphics[width=0.95\textwidth]{figs/nonlinearleastsquares}
-\end{center}
+\medskip
+\includegraphics[width=0.9\textwidth]{figs/nls}
 
 \medskip
 \item training a neural net is \alert{nonlinear least-squares optimization}
     \begin{itemize}
-    \item[$\circ$] $y^{\{i\}} - a^{[L]}(x^{\{i\}})$ is the \alert{residual vector} for $i$th data
+    \item[$\circ$] $\left\|y^{\{i\}} - a^{[L]}(x^{\{i\}})\right\|_2$ is the \alert{residual norm} for $i$th data
     \item[$\circ$] it becomes zero when the network fully-learns the $i$th data
     \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{buzzwords}
+\begin{frame}{fundamental idea: cost is a function of weights and biases}
 
 \begin{itemize}
-\item \alert{deep learning} if $L>2$
+\item recall:
+   $$p = \{W^{[2]},W^{[3]},\dots,W^{[L]},b^{[2]},b^{[3]},\dots,b^{[L]}\}$$
+collects all weight matrices and biases into one big vector
+\item \alert{the cost for one data pair is a function of} $p$:
+    $$C^{\{i\}}(p) = \frac{1}{2} \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}})\right\|_2^2$$
+\item that is, always remember:
+
+\bigskip
+\begin{quote}
+given parameters $p$, one forward pass through the network is needed to evaluate $C^{\{i\}}(p)$
+\end{quote}
+
+\medskip
+    \begin{itemize}
+    \item[$\circ$] forward pass uses input $x^{\{i\}}$
+    \end{itemize}
 \end{itemize}
 \end{frame}
+
+
+\begin{frame}{gradient descent}
+
+\begin{itemize}
+\item our goal is to minimize \quad \small $\displaystyle C(p) = \frac{1}{2N} \sum_{i=1}^N \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}})\right\|_2^2$ \normalsize
+\item the function $C(p)$ is differentiable
+    \begin{itemize}
+    \item[$\circ$] \emph{why differentiable? what does this assume about the network?}
+    \end{itemize}
+\item \dots thus we can compute the \alert{gradient} $\grad C(p)$
+\item the gradient points \emph{up hill} on the surface $C:\RR^s\to\RR$,
+\item natural idea: do \alert{gradient descent}
+\end{itemize}
+\begin{pseudo*}
+\pr{gd}(p)\text{:} \\+
+    for $i = 1,2,\dots$ \\+
+        $p = p - \eta \grad C(p)$ \\-
+    return $p$
+\end{pseudo*}
+
+\vspace{-25mm}
+\hfill \includegraphics[width=0.45\textwidth]{figs/gdsurface}
+\end{frame}
+
+
+\begin{frame}{gradient descent is miserable}
+
+\begin{pseudo*}
+\pr{gd}(p)\text{:} \\+
+    for $i = 1,2,\dots$ \\+
+        $p = p - \eta \grad C(p)$ \\-
+    return $p$
+\end{pseudo*}
+
+\vspace{-25mm}
+\hfill \includegraphics[width=0.35\textwidth]{figs/gdsurface} \phantom{adslj}
+
+\medskip
+\begin{itemize}
+\item foo
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{buzzword summary (so far)}
+
+\begin{itemize}
+\item \alert{artificial neuron}
+    \begin{itemize}
+    \item[$\circ$] \alert{activation}
+    \item[$\circ$] \alert{activation function}
+        \begin{itemize}
+        \item sigmoid, ReLU
+        \end{itemize}
+    \item[$\circ$] \alert{weight}
+    \item[$\circ$] \alert{bias}
+    \end{itemize}
+\item \alert{artificial neural network} = ANN
+    \begin{itemize}
+    \item[$\circ$] feed-forward network
+    \end{itemize}
+\item \alert{training}
+    \begin{itemize}
+    \item[$\circ$] \alert{supervised learning}
+    \item[$\circ$] labeled data
+    \item[$\circ$] nonlinear least-squares optimization
+    \end{itemize}
+\item \alert{stochastic gradient descent}
+
+\bigskip
+\item \alert{machine learning}
+    \begin{itemize}
+    \item[$\circ$] \alert{deep learning} if $L>2$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
 
 \section{backward through a neural net}
 
@@ -662,6 +755,24 @@ to ``nonlinear least-squares'' in a standard optimization textbook (Nocedal \& W
 \begin{itemize}
 \item latex
 \item beamer
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{future topics?}
+
+\begin{itemize}
+\item CNN
+\item GNN
+\item Newton and Quasi-Newton optimization methods
+    \begin{itemize}
+    \item[$\circ$] L-BFGS
+    \end{itemize}
+\item stochastic optimization
+    \begin{itemize}
+    \item[$\circ$] online machine learning
+    \item[$\circ$] Adam
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
