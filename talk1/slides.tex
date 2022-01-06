@@ -90,7 +90,7 @@
       \usebeamertemplate{enumerate item} \,}}
 
 
-\title{Getting started with machine learning}
+\title{Getting started on machine learning}
 
 \subtitle{{with one little artificial neural net}}
 
@@ -130,9 +130,9 @@
 \item \alert{my topic:} {\small how this $\downarrow$ neural network does this $\downarrow$ classification task}
 
 \medskip
-\hspace{5mm} \includegraphics[height=25mm]{figs/network.png} \hfill \includegraphics[height=23mm]{figs/classification} \hspace{10mm}
+\hspace{5mm} \includegraphics[height=30mm]{figs/network.png} \hfill \includegraphics[height=30mm]{figs/classification} \hspace{10mm}
 
-\medskip
+\bigskip
 \item an \alert{example} from this $\downarrow$ paper:
 
 \medskip
@@ -148,17 +148,19 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \begin{frame}{today's talk}
 
 \begin{itemize}
-\item \alert{goal for today:} know the meanings of
+\item \alert{goal for today.} know the meanings of ML language:
 
 \medskip
 \small
 \qquad \begin{tabular}{ll}
 \emph{artificial neuron} \qquad & \emph{activation function} \\
 \emph{weight matrix} & \emph{bias vector} \\
-\emph{back-propagation} & \emph{stochastic gradient method}
+\emph{training} & \emph{stochastic gradient descent} \\
+\emph{back-propagation}
 \end{tabular}
 
 \medskip
+\item ML = machine learning
 \item which standard mathematical concept(s) match these buzzwords?
 \end{itemize}
 \end{frame}
@@ -202,12 +204,12 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 
 \section{a single artificial neuron}
 
-\begin{frame}{one artificial neuron $=$ nonlinear-ized inner product}
+\begin{frame}{artificial neuron $=$ nonlinear-ized inner product}
 
 \begin{columns}
 \begin{column}{0.55\textwidth}
 \begin{itemize}
-\item given (column) vectors $v,w \in \RR^n$
+\item given (column) vectors $v,{\color{blue} w} \in \RR^n$
 \item recall \emph{inner product}:
     $$\ip{{\color{blue} w}}{v} = {\color{blue} w}^\top v = \sum_{j=1}^n {\color{blue} w_j} v_j$$
 \item apply a nonlinear function $\sigma: \RR^1 \to \RR^1$:
@@ -264,6 +266,8 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 
 \begin{center}
 \includegraphics[height=30mm]{figs/sigmoid} \hspace{10mm} \includegraphics[height=30mm]{figs/relu}
+
+sigmoid \hspace{42mm} ReLU \phantom{fo}
 \end{center}
 
 \begin{itemize}
@@ -273,8 +277,8 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
     \end{itemize}
 \item some possibilities:
     \begin{itemize}
-    \item[$\circ$] \alert{sigmoid}, e.g.\qquad $\displaystyle \sigma(z) = \frac{1}{1 + e^{-z}}$ \quad (left)
-    \item[$\circ$] \alert{rectified linear unit (ReLU)},\qquad $\displaystyle \sigma(z) = \begin{cases} z, & z > 0 \\ 0, & z \le 0 \end{cases}$ \quad (right)
+    \item[$\circ$] \alert{sigmoid}, e.g.\qquad $\displaystyle \sigma(z) = \frac{1}{1 + e^{-z}}$
+    \item[$\circ$] \alert{rectified linear unit (ReLU)},\qquad $\displaystyle \sigma(z) = \begin{cases} z, & z > 0 \\ 0, & z \le 0 \end{cases}$
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -283,23 +287,21 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \begin{frame}{a trained neuron}
 
 \begin{columns}
-\begin{column}{0.55\textwidth}
+\begin{column}{0.6\textwidth}
 \begin{itemize}
-\item a \alert{trained neuron} is one with known parameters $w,b$
-\item then $a:\RR^n \to \RR^1$ is a known function:
-    $${\color{red} a} = \sigma(v)$$
+\item a \alert{trained neuron} is one with known parameters ${\color{blue} w},{\color{ForestGreen} b}$
+\item then ${\color{red} a}:\RR^n \to \RR^1$ is a known function:
+    $${\color{red} a} = {\color{red} a}(v)$$
 
     \begin{itemize}
     \item[$\circ$] similar cost to inner product
     \item[$\circ$] backward stable
+    \item[$\circ$] one might write ${\color{red} a}(v;{\color{blue} w},{\color{ForestGreen} b})$ to make dependence on parameters clear
     \end{itemize}
-\item one might write
-    $${\color{red} a} = \sigma(v;{\color{blue} w},{\color{ForestGreen} b})$$
-to make dependence on parameters clear
 \end{itemize}
 \end{column}
-\begin{column}{0.45\textwidth}
-\includegraphics[width=\textwidth]{figs/b-single-neuron}
+\begin{column}{0.4\textwidth}
+\hfill \includegraphics[width=0.9\textwidth]{figs/b-single-neuron}
 \end{column}
 \end{columns}
 \end{frame}
@@ -322,8 +324,8 @@ to make dependence on parameters clear
 \item considering only \alert{feed-forward} networks
     \begin{itemize}
     \item[$\circ$] edges connect consecutive layers, in order
-    \item[$\circ$] in language of graph theory: a connected, directed acyclic graph which is equal to its own transitive reduction \dots I think
-    \item[$\circ$] \alert{feed-forward} versus \alert{recurrent}
+    \item[$\circ$] in ML language: feed-forward versus \alert{recurrent}
+    \item[$\circ$] in graph language: ``feed-forward network'' $=$ connected, directed acyclic graph which is equal to its own transitive reduction
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -375,17 +377,17 @@ to make dependence on parameters clear
 
 \begin{itemize}
 \item one (row) vector of weights for each neuron
-\item neurons in one layer are weighted by a matrix:
+\item the inputs to the neurons in a layer are weighted by a matrix:
     $${\color{ForestGreen} W^{[\ell]}} = \left(\text{weights into layer $\ell$}\right) = \begin{bmatrix} {\color{ForestGreen} w_{jk}^{[\ell]}} \end{bmatrix}$$
 
     \begin{itemize}
     \item[$\circ$] ${\color{ForestGreen} W^{[\ell]}}$ is $n_{\ell}\times n_{\ell-1}$
     \end{itemize}
-\item assume $\sigma$ applied entrywise:
+\item assuming $\sigma$ applied entrywise:
     $${\color{blue} a^{[\ell]}} = \sigma\left({\color{ForestGreen} W^{[\ell]}} {\color{blue} a^{[\ell-1]}} + b^{[\ell]}\right)$$
 
     \begin{itemize}
-    \item[$\circ$] bias vector $b^{[\ell]} \in \RR^{n_{\ell}}$
+    \item[$\circ$] also: bias vector $b^{[\ell]} \in \RR^{n_{\ell}}$
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -404,8 +406,8 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
             &= \sigma\left(W^{[4]} \sigma\left(W^{[3]} \sigma\left(W^{[2]} a^{[1]} + b^{[2]}\right) + b^{[3]}\right) + b^{[4]}\right) \\
             &= \sigma\left(W^{[4]} \sigma\left(W^{[3]} \sigma\left(W^{[2]} x + b^{[2]}\right) + b^{[3]}\right) + b^{[4]}\right)
 \end{align*}
-\item if $\sigma(z)=z$ and $b^{[\ell]}=0$ then $y = W^{[4]} W^{[3]} W^{[2]} x$
-\item feed-forward network = nonlinear \& affine matrix multiplication
+\item \emph{simplified:} if $\sigma(z)=z$ and $b^{[\ell]}=0$ then $y = W^{[4]} W^{[3]} W^{[2]} x$
+\item feed-forward network = nonlinear- \& affine-ized matrix product
 \end{itemize}
 \end{frame}
 
@@ -413,13 +415,13 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \begin{frame}{forward-pass neural network formulas}
 
 \begin{itemize}
-\item input $x = a^{[1]} \in \RR^{n_1}$ to output $y = a^{[L]} \in \RR^{n_L}$ by layers:
-    $$a^{[\ell]} = \sigma\left(W^{[\ell]} a^{[\ell-1]} + b^{[\ell]}\right) \in \RR^{n_\ell} \qquad \text{for } \ell=2,3,\dots,L$$
+\item compute from input $x = a^{[1]}$ to output $y = a^{[L]}$ by layers:
+    $$a^{[\ell]} = \sigma\left(W^{[\ell]} a^{[\ell-1]} + b^{[\ell]}\right) \qquad \text{for } \ell=2,3,\dots,L$$
 
     \begin{itemize}
     \item[$\circ$] equation (3.2) in HH19
     \end{itemize}
-\item such a forward pass is an obvious loop:
+\item a forward pass is an obvious loop:
 
 \begin{pseudo*}
 \pr{forward}(x)\text{:} \\+
@@ -446,20 +448,16 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
     $$2 n^{[\ell-1]} n^{[\ell]} + O(n^{[\ell]}) = O(n^{[\ell-1]} n^{[\ell]})$$
 
     \begin{itemize}
+    \item[$\circ$] using big-O in the ``$n \to \infty$'' limit of big layers
     \item[$\circ$] evaluating activation functions is cheap
-    \item[$\circ$] forward-pass work is basically just matrix multiplications
+    \item[$\circ$] the work at one layer is basically just a matrix-vector product
     \end{itemize}
 \item let $n_{\text{max}} =\max\{n^{[\ell]}\}$, the maximum layer size
-\item total forward-pass work:
+\item the total forward-pass work in an $L$-layer network is asymptotically the same as $L$ matrix-vector products:
     $$\sum_{\ell=2}^L O(n^{[\ell-1]} n^{[\ell]}) = O(L n_{\text{max}}^{\,2})$$
-
+\item \emph{note:} a forward pass is easily computed by GPU hardware
     \begin{itemize}
-    \item[$\circ$] using big-O in the ``$n_{\text{max}} \to \infty$'' limit of big layers
-    \item[$\circ$] asymptotically same cost as $L$ matrix-vector products
-    \item[$\circ$] easily computed by GPU hardware
-        \begin{itemize}
-        \item \emph{versus} solving linear systems \dots
-        \end{itemize}
+    \item[$\circ$] versus solving linear systems \dots
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -498,16 +496,16 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \end{frame}
 
 
-\begin{frame}{training is a biologically-motivated procedure}
+\begin{frame}{training yields persistant changes to brain}
 
 \begin{itemize}
 \item biological learning can last from hours to decades
-\item something permanent changes within the brain
+\item something permanent/persistent changes within the brain
     \begin{itemize}
-    \item[$\circ$] neuron excitation is electrical (activation is temporary)
-    \item[$\circ$] neuron count is relatively fixed
-    \item[$\circ$] in learning, there are chemical or morpological changes in connections between neurons, the \alert{synapses} where an axon connects to another neuron's dendrite
+    \item[$\circ$] but neuron excitation is electrical (activation is temporary),
+    \item[$\circ$] and neuron count is relatively fixed
     \end{itemize}
+\item training yields chemical or morpological changes in connections between neurons, especially the \alert{synapses} where the axon connects to another neuron's dendrite
 \end{itemize}
 
 \begin{center}
@@ -519,17 +517,17 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \begin{frame}{artificial neurons as a model of real neurons}
 
 \begin{itemize}
-\item biological realism is \emph{not} needed for machine learning
-\item replace with a simplified artificial neuron:
+\item but biological realism is \emph{not} needed for machine learning!
+\item we use a simplified artificial neuron:
 
 \begin{center}
 \includegraphics[width=0.3\textwidth]{figs/b-single-neuron}
 \end{center}
 
     \begin{itemize}
-    \item[$\circ$] the model is merely a formula: \quad $\displaystyle {\color{red} a} = \sigma\left(\sum_{k=1}^{n} {\color{blue} w_{k}} v_k + {\color{ForestGreen} b}\right)$
+    \item[$\circ$] this model is merely a formula: \quad $\displaystyle {\color{red} a} = \sigma\left(\sum_{k=1}^{n} {\color{blue} w_{k}} v_k + {\color{ForestGreen} b}\right)$
     \end{itemize}
-\item training will make ``permanent'' changes in the weights ${\color{blue} w_k}$ and biases ${\color{ForestGreen} b}$
+\item however, training needs to make ``permanent'' changes in the weights ${\color{blue} w_k}$ and biases ${\color{ForestGreen} b}$
 \item after training, forward passes are the network's ``learned behavior''
 \end{itemize}
 \end{frame}
@@ -546,26 +544,9 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
     \begin{itemize}
     \item[$\circ$] $x^{\{i\}} \in \RR^{n_1}$ are the \alert{data}
     \item[$\circ$] $y^{\{i\}} \in \RR^{n_L}$ are the \alert{labels}
-        \begin{itemize}
-        \item[\emph{note:}] labeled data determine number of neurons in the first and last layers
-        \end{itemize}
     \item[$\circ$] in a \alert{classification task}, the $y^{\{i\}}$ only take on finitely-many values
     \end{itemize}
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{supervised training cost functional}
-
-\begin{itemize}
-\item \alert{supervised training} means choosing the weights $W^{[\ell]}$ and biases $b^{[\ell]}$, in \emph{all} the layers, so as to approximately minimize the \alert{average misfit} between the the network output for the each data vector and the corresponding (\alert{correct}) label vector
-\item using the squared $2$-norm for the misfit, this is a formula:
-    $$\text{Cost} = \frac{1}{N} \sum_{i=1}^N \frac{1}{2} \|y^{\{i\}} - a^{[L]}(x^{\{i\}})\|_2^2$$
-
-    \begin{itemize}
-    \item[$\circ$] $a^{[L]}(x^{\{i\}})$ denotes the output-layer activation from a forward pass with input $x^{\{i\}}$
-    \item[$\circ$] the Cost is a scalar-valued funciton (\alert{functional}) of the \emph{parameters}, the weights and biases
-    \end{itemize}
+\item observation: the labeled data determine the number of neurons in the first and last layers
 \end{itemize}
 \end{frame}
 
@@ -593,6 +574,21 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \end{frame}
 
 
+\begin{frame}{a supervised training cost functional}
+
+\begin{itemize}
+\item \alert{supervised training} means choosing the weights $W^{[\ell]}$ and biases $b^{[\ell]}$, in \emph{all} the layers, so as to approximately minimize the \alert{average misfit} between the the network output from input data vector $x^{\{i\}}$ and the corresponding label vector $y^{\{i\}}$
+\item using the squared $2$-norm for the misfit, this is a formula:
+    $$\text{Cost} = \frac{1}{N} \sum_{i=1}^N \frac{1}{2} \|y^{\{i\}} - a^{[L]}(x^{\{i\}})\|_2^2$$
+
+    \begin{itemize}
+    \item[$\circ$] $a^{[L]}(x^{\{i\}}) =$ output-layer activation from forward pass with input $x^{\{i\}}$
+    \item[$\circ$] the Cost is a scalar-valued function (\alert{functional}) of the weights and biases
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{better training notation}
 
 \begin{itemize}
@@ -608,7 +604,7 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 
 \medskip
 \begin{quote}
-The output from a forward pass through the network, namely $a^{[L]}(x^{\{i\}}; p)$, depends \emph{both} on the input data $x^{\{i\}}$ and all the weights and biases $p$.  For understanding training we emphasize that the cost of one data pair is a function of $p$: $C^{\{i\}}(p)$.
+The output from a forward pass through the network, namely $a^{[L]}(x^{\{i\}}; p)$, depends \emph{both} on the input data $x^{\{i\}}$ and all the weights and biases $p$.  We emphasize that the cost of one data pair is a function of $p$: $C^{\{i\}}(p)$.
 \end{quote}
 \end{itemize}
 \end{frame}
@@ -657,7 +653,7 @@ to ``nonlinear least-squares'' in a standard optimization textbook (Nocedal \& W
 \item from now on we simplify notation: \quad $\displaystyle a^{[L]} = a^{[L]}(x^{\{i\}}; p)$
 
 \bigskip\bigskip
-\item[\textbf{Q.}] why is $C(p) = \frac{1}{2N} \sum_{i=1}^N \left\|y^{\{i\}} - a^{[L]}\right\|_2^2$ a function of $p$?
+\item<2>[\textbf{Q.}] why is $C(p) = \frac{1}{2N} \sum_{i=1}^N \left\|y^{\{i\}} - a^{[L]}\right\|_2^2$ a function of $p$?
 \item<2>[\textbf{a.}] because the activations of the final layer, namely $a^{[L]}$, are determined by the weights and biases in the network
 \end{itemize}
 \end{frame}
@@ -709,7 +705,7 @@ to ``nonlinear least-squares'' in a standard optimization textbook (Nocedal \& W
     \end{itemize}
 \item known issues with naive GD:
     \begin{itemize}
-    \item[$\circ$] it is not clear how far to step, i.e.~how to set $\eta>0$?
+    \item[$\circ$] it is not clear how far to step \hfill (how to set $\eta$?)
         \begin{itemize}
         \item $C(p)$, $\grad C(p)$ provide no information
         \item provable convergence requires a \emph{line search} or \emph{trust region} approach,  otherwise $G(p)$ may not even decrease
@@ -726,7 +722,7 @@ to ``nonlinear least-squares'' in a standard optimization textbook (Nocedal \& W
 \begin{itemize}
 \item GD is widely used for training in \alert{machine learning} (ML)
     \begin{itemize}
-    \item[$\circ$] a seminar priority: limitations, modifications, alternatives?
+    \item[$\circ$] a seminar priority?: GD limitations, modifications, alternatives
     \end{itemize}
 
 \medskip
@@ -744,7 +740,6 @@ to ``nonlinear least-squares'' in a standard optimization textbook (Nocedal \& W
 \bigskip
     \item \alert{back-propagation}: when computing $\grad C^{\{i\}}(p)$, regard the chain rule as information which can be fed backward through the network
         \begin{itemize}
-        \item[$\circ$] in ML language: information = ``nudges''
         \item[$\circ$] back-propagation uses info found in computing forward for $C^{\{i\}}(p)$
         \end{itemize}
     \end{enumerate}
@@ -774,8 +769,8 @@ st-left=, st-right=
 \item variations:
     \begin{itemize}
     \item[$\circ$] choose $i$ without replacement
-    \item[$\circ$] batching
-    \item[$\circ$] \alert{online}
+    \item[$\circ$] batching: $p \gets p - \eta \frac{1}{m} \sum_{i=1}^m \grad C^{\{k_i\}}(p)$
+    \item[$\circ$] \alert{online}: $N$ unknown; data pairs $(x^{\{i\}},y^{\{i\}})$ are provided by a stream
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -787,29 +782,18 @@ st-left=, st-right=
 \item[] \qquad \small $\displaystyle C(p) = \frac{1}{N} \sum_{i=1}^N C^{\{i\}}(p), \qquad C^{\{i\}}(p) = \frac{1}{2} \left\|y^{\{i\}} - a^{[L]}\right\|_2^2$ \normalsize
 
 \medskip
-\item $N$ = amount of training data\, $\therefore$\, $N$ should be large
-\item gradient = (data-average gradient): \quad \small $\displaystyle \grad C(p) = \frac{1}{N} \sum_{i=1}^N \grad C^{\{i\}}(p)$ \normalsize
+\item $N$ = amount of training data\, $\therefore$\, $N$ is (should be) large
 \item gradient for one data pair:
 \begin{align*}
 \grad C^{\{i\}}(p) &= \grad\left[\frac{1}{2} (y^{\{i\}} - a^{[L]})^\top (y^{\{i\}} - a^{[L]})\right] \\
     &= - \sum_{j=1}^{n_L} (y_j^{\{i\}} - a^{[L]}_j)\, \grad a^{[L]}_j
 \end{align*}
-
+\item chain rule will be needed to expand further
     \begin{itemize}
-    \item[$\circ$] chain rule will be needed to expand further
-        \begin{itemize}
-        \item network output $a_j^{[L]}$ is a \emph{composition} of matrix-vector products and (nonlinear) $\sigma$ applications
-        \end{itemize}
-    \item[$\circ$] how to compute $\grad a^{[L]}_j$ efficiently? \dots time for the chain rule!
+    \item[$\circ$] network output $a_j^{[L]}$ is a \emph{composition} of matrix-vector products and (nonlinear) $\sigma$ applications
     \end{itemize}
+\item how to compute $\grad a^{[L]}_j$ efficiently? \dots time for the chain rule!
 \end{itemize}
-\end{frame}
-
-
-\section{backward through a neural net}
-
-\begin{frame}{Outline}
-  \tableofcontents[hideallsubsections,currentsection]
 \end{frame}
 
 
@@ -823,8 +807,8 @@ st-left=, st-right=
         \begin{itemize}
         \item sigmoid, ReLU
         \end{itemize}
-    \item[$\circ$] \alert{weight}
-    \item[$\circ$] \alert{bias}
+    \item[$\circ$] \alert{weight} matrix
+    \item[$\circ$] \alert{bias} vector
     \end{itemize}
 \item \alert{artificial neural network} = ANN
     \begin{itemize}
@@ -836,18 +820,25 @@ st-left=, st-right=
     \item[$\circ$] labeled data
     \item[$\circ$] nonlinear least-squares optimization
     \end{itemize}
-\item \alert{stochastic gradient descent}
+\item \alert{stochastic gradient descent} $=$ SGD
     \begin{itemize}
     \item[$\circ$] learning rate
     \end{itemize}
 \item \alert{back-propagation}
 
 \hspace{-7mm} \hrulefill
-\item \alert{machine learning}
+\item \alert{machine learning} $=$ ML
     \begin{itemize}
     \item[$\circ$] \alert{deep learning} if $L>2$
     \end{itemize}
 \end{itemize}
+\end{frame}
+
+
+\section{backward through a neural net}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
 \end{frame}
 
 
@@ -861,22 +852,22 @@ st-left=, st-right=
     \end{itemize}
 
 \medskip
-\item want: \qquad \small  $\displaystyle \grad C^{\{i\}}(p) = \left[\frac{\partial C^{\{i\}}}{\partial p_1},\dots,\frac{\partial C^{\{i\}}}{\partial p_s}\right]^\top$ \normalsize
+\item want: \qquad \small  $\displaystyle \grad C^{\{i\}}(p) = \left[\frac{\partial C^{\{i\}}}{\partial p_1},\dots,\frac{\partial C^{\{i\}}}{\partial p_s}\right]$ \normalsize
 \item the components of this gradient come in two types:
     $$\frac{\partial C^{\{i\}}}{\partial w_{jk}^{[\ell]}}, \quad \frac{\partial C^{\{i\}}}{\partial b_j^{[\ell]}}$$
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{chain rule on the cost}
+\begin{frame}{chain rule on the cost (for the last layer)}
 
 \begin{itemize}
-\item recall:\quad $a^{[L]} = \sigma(z_j^{[L]})$,\quad $\displaystyle z_j^{[L]} = \sum_{k=1}^{n_{L-1}} w_{jk}^{[L]} a_k^{[L-1]} + b_j^{[L]}$
-\item expand the 2-norm and the activation in the cost formula:
+\item recall:\quad $\displaystyle z_j^{[L]} = \sum_{k=1}^{n_{L-1}} w_{jk}^{[L]} a_k^{[L-1]} + b_j^{[L]}$
+\item expand the 2-norm and the activation in the one-pair cost formula:
     $$C^{\{i\}}(p) = \frac{1}{2} \sum_{j=1}^{n_L} (y_j^{\{i\}} - \underbrace{\sigma(z_j^{[L]})}_{= a_j^{[L]}})^2$$
 
 \vspace{-4mm}
-\item thus by chain rule:
+\item thus by the chain rule:
 \begin{align*}
 \frac{\partial C^{\{i\}}}{\partial w_{jk}^{[L]}} &= \boxed{\frac{\partial C^{\{i\}}}{\partial z_j^{[L]}}}\, \frac{\partial z_j^{[L]}}{\partial w_{jk}^{[L]}} = \boxed{\frac{\partial C^{\{i\}}}{\partial z_j^{[L]}}}\, a_k^{[L-1]} \\
 \frac{\partial C^{\{i\}}}{\partial b_{j}^{[L]}} &= \boxed{\frac{\partial C^{\{i\}}}{\partial z_j^{[L]}}}\, \frac{\partial z_j^{[L]}}{\partial b_{j}^{[L]}} = \boxed{\frac{\partial C^{\{i\}}}{\partial z_j^{[L]}}}
@@ -895,6 +886,7 @@ st-left=, st-right=
     $$\delta_j^{[\ell]} = \frac{\partial C^{\{i\}}}{\partial z_j^{[\ell]}}$$
 
     \begin{itemize}
+    \item[$\circ$] this definition is for \emph{any layer} $\ell$
     \item[$\circ$] remember that this is for one data pair $(x^{\{i\}},y^{\{i\}})$
     \end{itemize}
 \item for the final layer $\ell=L$ we already have:
@@ -910,10 +902,10 @@ st-left=, st-right=
 \begin{frame}{chain rule on the cost}
 
 \begin{itemize}
-\item going deeper into the network one must follow multiple routes
-    \begin{itemize}
-    \item[$\circ$] $a_j^{[L]}$ depends on $a_k^{[L-1]}$ for different $k$, then $a_k^{[L-1]}$ depends on $a_s^{[L-2]}$ for different $s$, \dots
-    \end{itemize}
+\item to go further back into the network, follow multiple routes:
+\begin{quote}
+$a_j^{[L]}$ depends on $a_k^{[L-1]}$ for different $k$, then $a_k^{[L-1]}$ depends on $a_s^{[L-2]}$ for different $s$, \dots
+\end{quote}
 \item example: \quad what is derivative of cost $C^{\{i\}}$ with respect to \small ${\color{red} w_{43}^{[3]}}$\normalsize?
 
 \begin{center}
@@ -925,13 +917,13 @@ st-left=, st-right=
 
 \begin{frame}{find inside the chain rule: multiplication by the transpose}
 
-\hfill \includegraphics[width=0.2\textwidth]{figs/cleannet}
-
-\vspace{-15mm}
 \begin{itemize}
-\item example if $L=4$, for a neuron in layer $\ell=3$:
-   $$\frac{\partial C^{\{i\}}}{\partial w_{jk}^{[3]}} = \underbrace{\frac{\partial C^{\{i\}}}{\partial z_{j}^{[3]}}}_{multi-route} \underbrace{\frac{\partial z_{j}^{[3]}}{\partial w_{jk}^{[3]}}}_{easy} = \delta_j^{[3]} a_{k}^{[2]}$$
-\item but $\delta_j^{[3]}$ relates to the \emph{next}-layer deltas $\delta_s^{[4]}$ by matrix multiplication:
+\item \emph{example.} $L=4$; consider a weight into layer $\ell=3$:
+   $$\frac{\partial C^{\{i\}}}{\partial w_{jk}^{[3]}} = \underbrace{\frac{\partial C^{\{i\}}}{\partial z_{j}^{[3]}}}_{multi-route} \underbrace{\frac{\partial z_{j}^{[3]}}{\partial w_{jk}^{[3]}}}_{easy} = \delta_j^{[3]} a_{k}^{[2]} \phantom{sdlkjaf ajdsf lkadfj sdafkj}$$
+
+\vspace{-25mm}
+\hfill \includegraphics[width=0.3\textwidth]{figs/redcleannet}
+\item but $\delta_j^{[3]}$ relates to the \emph{next}-layer deltas $\delta^{[4]}$ by matrix multiplication:
 \begin{align*}
 \delta_j^{[3]} = \frac{\partial C^{\{i\}}}{\partial z_{j}^{[3]}} &= \sum_{s=1}^{n_4} \frac{\partial C^{\{i\}}}{\partial z_{s}^{[4]}} \frac{\partial z_{s}^{[4]}}{\partial z_{j}^{[3]}} \\
   &= \sum_{s=1}^{n_4} \delta_s^{[4]} \frac{\partial z_{s}^{[4]}}{\partial a_{j}^{[3]}} \frac{\partial a_{j}^{[3]}}{\partial z_{j}^{[3]}} \\
@@ -948,10 +940,10 @@ st-left=, st-right=
     $$(x\circ y)_j = x_j y_j$$
 
 \begin{lemma}
-$\displaystyle \delta^{[\ell]} = \left[\frac{\partial C^{\{i\}}}{\partial z_j^{[\ell]}}\right]  \in \RR^{n_{\ell}}$ can be computed by (back-) multiplying the weight matrix transposes (adjoints):
+the vector $\displaystyle \delta^{[\ell]} = \left[\frac{\partial C^{\{i\}}}{\partial z_j^{[\ell]}}\right]  \in \RR^{n_{\ell}}$ can be computed by (back-) multiplying the weight matrix transposes (adjoints):
 \begin{align*}
 \delta^{[L]} &= \sigma'(z^{[L]}) \circ (a^{[L]} - y^{\{i\}}), \\
-\delta^{[\ell]} &= \sigma'(z^{[\ell]}) \circ \underbrace{(W^{[4]})^\top \delta^{[\ell+1]}}_{\text{matrix-vector product}}, \qquad \ell = L-2,L-3,\dots,2
+\delta^{[\ell]} &= \sigma'(z^{[\ell]}) \circ \underbrace{(W^{[\ell+1]})^\top \delta^{[\ell+1]}}_{\text{matrix-vector product}}, \qquad \ell = L-1,L-2,\dots,2
 \end{align*}
 \end{lemma}
 
