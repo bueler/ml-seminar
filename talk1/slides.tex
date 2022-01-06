@@ -23,7 +23,7 @@
 
 \usepackage{empheq,bm}
 \usepackage{xspace}
-\usepackage{verbatim,fancyvrb}
+\usepackage{fancyvrb}
 
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows.meta,decorations.markings,decorations.pathreplacing,fadings,positioning}
@@ -961,9 +961,9 @@ for $\ell = 2,\dots,L$
 
 \bigskip
 \begin{itemize}
-\item \emph{observation:}  the derivative matrix, with respect to $W^{[\ell]}$, is a rank-one outer product:
+\item \emph{observation:}  as a matrix,
     $$\frac{\partial C^{\{i\}}}{\partial W^{[\ell]}} = \delta^{[\ell]} \left(a^{[\ell-1]}\right)^\top$$
-
+is a rank-one outer product
 \end{itemize}
 \end{frame}
 
@@ -974,7 +974,7 @@ from $x,y$ and $p=\{W^{[\ell]},b^{[\ell]}\}$ compute $C(p)$ and $\grad C(p)$:
 
 \vspace{-2mm}
 \begin{pseudo*}
-\pr{forwardbackward}(x,y,W^{[\ell]},b^{[\ell]})\text{:} \\+
+\pr{forback}(x,y,W^{[\ell]},b^{[\ell]})\text{:} \\+
     $a^{[1]} = x$ \\
     for $\ell = 2,\dots,L$: \\+
         $z^{[\ell]} = W^{[\ell]} a^{[\ell-1]} + b^{[\ell]}$ \\
@@ -991,9 +991,32 @@ from $x,y$ and $p=\{W^{[\ell]},b^{[\ell]}\}$ compute $C(p)$ and $\grad C(p)$:
 \end{frame}
 
 
+\begin{frame}{we are ready to train an ANN}
+
+\begin{itemize}
+\item we are ready to train a network, e.g.~on a classification task:
+
+\medskip
+\hspace{5mm} \includegraphics[height=25mm]{figs/network.png} \hfill \includegraphics[height=25mm]{figs/fig1netbp} \hspace{10mm}
+
+\item one could call \textsc{forback()} in a SGD training loop:
+
+\begin{pseudo*}
+for $s = 1,2,\dots$ \\+
+    $i=$ (\st{random uniform from} $\{1,\dots,N\}$) \\
+    $C^{\{i\}},\frac{\partial C^{\{i\}}}{\partial W^{[\ell]}},\frac{\partial C^{\{i\}}}{\partial b^{[\ell]}} = \pr{forback}(x^{\{i\}},y^{\{i\}},\dots)$ \\
+    $W^{[\ell]} \gets W^{[\ell]} - \eta\, \frac{\partial C^{\{i\}}}{\partial W^{[\ell]}}$ {\Large \strut}\\
+    $b^{[\ell]} \gets b^{[\ell]} - \eta\, \frac{\partial C^{\{i\}}}{\partial b^{[\ell]}}$ {\Large \strut} \\-
+\end{pseudo*}
+
+\item also natural to combine in one loop: (forward pass) $+$ BP $+$ SGD
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{pseudocode: training using SGD and BP}
 
-we can integrate SGD into the BP loop (page 873 in HH19):
+integrate SGD into the \textsc{forback()} loop; see \texttt{netbp.m} in HH19:
 
 \vspace{-2mm}
 \begin{pseudo*}
@@ -1014,6 +1037,7 @@ we can integrate SGD into the BP loop (page 873 in HH19):
 \end{pseudo*}
 \end{frame}
 
+
 \section{running the codes yourself}
 
 \begin{frame}{Outline}
@@ -1021,54 +1045,85 @@ we can integrate SGD into the BP loop (page 873 in HH19):
 \end{frame}
 
 
-\begin{frame}{\emph{Matlab online} instructions: HH19 codes}
+\begin{frame}{\emph{Matlab} implementations}
 
 \begin{itemize}
+\item HH19 includes a Matlab implementation of \textsc{training()} for the small ($L=4$) ANN and classification task I have been showing
+\item see \texttt{netbp.m} and \texttt{netbpfull.m} at
+
+\begin{center} \small
+\href{https://www.maths.ed.ac.uk/~dhigham/algfiles.html}{\texttt{www.maths.ed.ac.uk/$\sim$dhigham/algfiles.html}}
+\end{center}
+\item I rewrote this code for my own amusement; see \texttt{example1.m} at
+
+\begin{center} \small
+\href{https://github.com/bueler/ml-seminar/tree/main/talk1/code}{\texttt{github.com/bueler/ml-seminar/tree/main/talk1/code}}
+\end{center}
+    \begin{itemize}
+    \item[$\circ$] my codes are tested in both Matlab and Octave
+    \end{itemize}
+
+\bigskip\bigskip
 \item as a UAF person you have access to Matlab online if you want it
 
-\begin{center}
+\begin{center} \small
 \href{https://matlab.mathworks.com/}{\texttt{matlab.mathworks.com}}
 \end{center}
+\item from now on, I'll assume you can run these things
+\end{itemize}
+\end{frame}
 
+
+\begin{frame}{HH19 code \texttt{netbp.m} fits on one page}
+
+\includegraphics[width=1.05\textwidth]{figs/netbp}
+
+\hfill $\vdots$ \hfill \phantom{fokladfksda fadsj adfskjo}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{running \texttt{netbp.m}}
+
+\begin{itemize}
+\item run graphics version of \texttt{netbp.m} in Matlab online:
+
+\begin{Verbatim}
+    >> tic, netbpfull, toc
+      ... spews cost values
+    Elapsed time is 148.599924 seconds.
+\end{Verbatim}
+
+\item does $10^6$ SGD iterations \dots that's not great for a small network
+\item \emph{result:} right figure below shows the contour where $a_1^{[4]} > a_2^{[4]}$
+\item my octave version produces similar result in similar time
+\end{itemize}
+
+\bigskip
+\mbox{\includegraphics[width=0.34\textwidth]{figs/fig1netbp}\includegraphics[width=0.35\textwidth]{figs/fig2netbp}\includegraphics[width=0.34\textwidth]{figs/fig3netbp}}
+\end{frame}
+
+
+\begin{frame}{there is so much more to say}
+
+\begin{itemize}
+\item there is much more to say about what we have already seen
+\item and I am not going to say it here!
     \begin{itemize}
-    \item[$\circ$] I also use Octave
+    \item[$\circ$] but please actually read HH19!
     \end{itemize}
-\item 
-\item beamer
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{\emph{Matlab online} instructions: my versions of HH19 codes}
-
-\begin{itemize}
-\item FIXME
-\item beamer
-\end{itemize}
-\end{frame}
-
-
-\section{things that bother me}
-
-\begin{frame}{Outline}
-  \tableofcontents[hideallsubsections,currentsection]
-\end{frame}
-
-
-\begin{frame}{fixme}
-
-\begin{itemize}
-\item latex
-\item beamer
-\end{itemize}
-\end{frame}
-
+\section{future topics}
 
 \begin{frame}{future topics?}
 
 \begin{itemize}
-\item CNN
-\item GNN
+\item convolutional neural networks = CNN
+\item recurrent neural networks = RNN
+\item graph neural networks = GNN
 \item Newton and Quasi-Newton optimization methods
     \begin{itemize}
     \item[$\circ$] L-BFGS
