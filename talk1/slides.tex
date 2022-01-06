@@ -29,7 +29,7 @@
 \usetikzlibrary{shapes,arrows.meta,decorations.markings,decorations.pathreplacing,fadings,positioning}
 
 \usepackage[kw]{pseudo}
-\pseudoset{left-margin=15mm,topsep=5mm,idfont=\texttt}
+\pseudoset{left-margin=15mm,topsep=5mm,idfont=\texttt,st-left=,st-right=}
 
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
@@ -426,7 +426,7 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
 \begin{pseudo*}
 \pr{forward}(x)\text{:} \\+
     $a^{[1]} = x$ \\
-    for $\ell = 2,3,\dots,L$ \\+
+    for $\ell = 2,3,\dots,L$: \\+
         $z^{[\ell]} = W^{[\ell]} a^{[\ell-1]} + b^{[\ell]}$ \\
         $a^{[\ell]} = \sigma\left(z^{[\ell]}\right)$ \\-
     return $y=a^{[L]}$
@@ -675,7 +675,7 @@ to ``nonlinear least-squares'' in a standard optimization textbook (Nocedal \& W
 \medskip
 \hspace{5mm} \mbox{\begin{pseudo*}
 \pr{gd}(p)\text{:} \\+
-    for $s = 1,2,\dots$ \\+
+    for $s = 1,2,\dots$: \\+
         $p \gets p - \eta \grad C(p)$ \\-
     return $p$
 \end{pseudo*}}
@@ -689,7 +689,7 @@ to ``nonlinear least-squares'' in a standard optimization textbook (Nocedal \& W
 
 \begin{pseudo*}
 \pr{gd}(p)\text{:} \\+
-    for $s = 1,2,\dots$ \\+
+    for $s = 1,2,\dots$: \\+
         $p \gets p - \eta \grad C(p)$ \\-
     return $p$
 \end{pseudo*}
@@ -749,13 +749,9 @@ to ``nonlinear least-squares'' in a standard optimization textbook (Nocedal \& W
 
 \begin{frame}{stochastic gradient descent (SGD)}
 
-\pseudoset{
-st-left=, st-right=
-}
-
 \begin{pseudo*}
 \pr{sgd}(p)\text{:} \\+
-    for $s = 1,2,\dots$ \\+
+    for $s = 1,2,\dots$: \\+
         $i=$ (\st{random uniform from} $\{1,\dots,N\}$) \\
         $p \gets p - \eta \grad C^{\{i\}}(p)$ \\-
     return $p$
@@ -824,7 +820,7 @@ st-left=, st-right=
     \begin{itemize}
     \item[$\circ$] learning rate
     \end{itemize}
-\item \alert{back-propagation}
+\item \alert{back-propagation} $=$ BP
 
 \hspace{-7mm} \hrulefill
 \item \alert{machine learning} $=$ ML
@@ -958,26 +954,65 @@ the vector $\displaystyle \delta^{[\ell]} = \left[\frac{\partial C^{\{i\}}}{\par
 \begin{corollary}
 once the $\delta^{[\ell]}$ are calculated, all components of the gradient are easy:
 \begin{align*}
-\frac{\partial C^{\{i\}}}{\partial w_{jk}^{[\ell]}} &= \delta_j^{[\ell]} a_k^{[\ell-1]}, \\
-\frac{\partial C^{\{i\}}}{\partial b_{j}^{[\ell]}} &= \delta_j^{[\ell]}
+\frac{\partial C^{\{i\}}}{\partial w_{jk}^{[\ell]}} &= \delta_j^{[\ell]} a_k^{[\ell-1]}, \qquad \frac{\partial C^{\{i\}}}{\partial b_{j}^{[\ell]}} = \delta_j^{[\ell]}
 \end{align*}
 for $\ell = 2,\dots,L$
 \end{corollary}
 
 \bigskip
 \begin{itemize}
-\item \emph{convenient point:}  after the $\delta^{[\ell]}$ are calculated, one can compute the components of the cost gradient in any order
+\item \emph{observation:}  the derivative matrix, with respect to $W^{[\ell]}$, is a rank-one outer product:
+    $$\frac{\partial C^{\{i\}}}{\partial W^{[\ell]}} = \delta^{[\ell]} \left(a^{[\ell-1]}\right)^\top$$
+
 \end{itemize}
 \end{frame}
 
-\begin{frame}{fixme}
 
-\begin{itemize}
-\item latex
-\item beamer
-\end{itemize}
+\begin{frame}{pseudocode: forward pass with back-propagation}
+
+from $x,y$ and $p=\{W^{[\ell]},b^{[\ell]}\}$ compute $C(p)$ and $\grad C(p)$:
+
+\vspace{-2mm}
+\begin{pseudo*}
+\pr{forwardbackward}(x,y,W^{[\ell]},b^{[\ell]})\text{:} \\+
+    $a^{[1]} = x$ \\
+    for $\ell = 2,\dots,L$: \\+
+        $z^{[\ell]} = W^{[\ell]} a^{[\ell-1]} + b^{[\ell]}$ \\
+        $a^{[\ell]} = \sigma(z^{[\ell]})$, \quad $r^{[\ell]} = \sigma'(z^{[\ell]})$ \\-
+    $C = \frac{1}{2} \|y - a^{[L]}\|_2^2$ {\Large \strut} \\
+    $\delta^{[L]} = r^{[L]} \circ (a^{[L]} - y)$ {\Large \strut} \\
+    for $\ell = L,\dots,2$: \\+
+        if $\ell<L$: \\+
+            $\delta^{[\ell]} = r^{[\ell]} \circ (W^{[\ell+1]})^\top \delta^{[\ell+1]}$ \\-
+        $\frac{\partial C}{\partial W^{[\ell]}} = \delta^{[\ell]} (a^{[\ell-1]})^\top$ {\Large \strut}\\
+        $\frac{\partial C}{\partial b^{[\ell]}} = \delta^{[\ell]}$ {\Large \strut} \\-
+    return $C,\left\{\frac{\partial C}{\partial W^{[\ell]}}\right\},\left\{\frac{\partial C}{\partial b^{[\ell]}}\right\}$
+\end{pseudo*}
 \end{frame}
 
+
+\begin{frame}{pseudocode: training using SGD and BP}
+
+we can integrate SGD into the BP loop (page 873 in HH19):
+
+\vspace{-2mm}
+\begin{pseudo*}
+\pr{training}(\{x^{\{i\}}\},\{y^{\{i\}}\},\{W^{[\ell]}\},\{b^{[\ell]}\})\text{:} \\+
+    for $s = 1,2,\dots$ \\+
+        $i=$ (\st{random uniform from} $\{1,\dots,N\}$) \\
+	    $a^{[1]} = x^{\{i\}}$ \\
+	    for $\ell = 2,\dots,L$: \\+
+	        $z^{[\ell]} = W^{[\ell]} a^{[\ell-1]} + b^{[\ell]}$ \\
+	        $a^{[\ell]} = \sigma(z^{[\ell]})$, \quad $r^{[\ell]} = \sigma'(z^{[\ell]})$ \\-
+	    $\delta^{[L]} = r^{[L]} \circ (a^{[L]} - y^{\{i\}})$ {\Large \strut} \\
+	    for $\ell = L,\dots,2$: \\+
+	        if $\ell<L$: \\+
+	             $\delta^{[\ell]} = r^{[\ell]} \circ (W^{[\ell+1]})^\top \delta^{[\ell+1]}$ \\-
+	        $W^{[\ell]} \gets W^{[\ell]} - \eta\, \delta^{[\ell]} (a^{[\ell-1]})^\top$ {\Large \strut}\\
+	        $b^{[\ell]} \gets b^{[\ell]} - \eta\, \delta^{[\ell]}$ {\Large \strut} \\--
+    return $\{W^{[\ell]}\},\{b^{[\ell]}\}$
+\end{pseudo*}
+\end{frame}
 
 \section{running the codes yourself}
 
