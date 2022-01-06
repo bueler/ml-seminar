@@ -856,13 +856,13 @@ st-left=, st-right=
 \begin{itemize}
 \item recall:
     \begin{itemize}
-    \item[$\circ$] $p = \{W^{[2]},W^{[3]},\dots,W^{[L]},b^{[2]},b^{[3]},\dots,b^{[L]}\}$ is a grab-bag of parameters
+    \item[$\circ$] $p = \{W^{[2]},W^{[3]},\dots,W^{[L]},b^{[2]},b^{[3]},\dots,b^{[L]}\} \in \RR^s$ is a grab-bag of parameters
     \item[$\circ$] cost for one pair $(x^{\{i\}},y^{\{i\}})$:  \qquad \small $\displaystyle C^{\{i\}}(p) = \frac{1}{2} \left\|y^{\{i\}} - a^{[L]}\right\|_2^2$ \normalsize
     \end{itemize}
 
 \medskip
 \item want: \qquad \small  $\displaystyle \grad C^{\{i\}}(p) = \left[\frac{\partial C^{\{i\}}}{\partial p_1},\dots,\frac{\partial C^{\{i\}}}{\partial p_s}\right]^\top$ \normalsize
-\item components of the gradient will come in two types:
+\item the components of this gradient come in two types:
     $$\frac{\partial C^{\{i\}}}{\partial w_{jk}^{[\ell]}}, \quad \frac{\partial C^{\{i\}}}{\partial b_j^{[\ell]}}$$
 \end{itemize}
 \end{frame}
@@ -871,18 +871,18 @@ st-left=, st-right=
 \begin{frame}{chain rule on the cost}
 
 \begin{itemize}
-\item recall $a^{[L]} = \sigma(z_j^{[L]})$ where $\displaystyle z_j^{[L]} = \sum_{k=1}^{n_{L-1}} w_{jk}^{[L]} a_k^{[L-1]} + b_j^{[L]}$
-\item expand the 2-norm and the activation in the cost of one pair:
-\begin{align*}
-C^{\{i\}}(p) &= \frac{1}{2} \sum_{j=1}^{n_L} (y^{\{i\}} - a^{[L]})^2 = \frac{1}{2} \sum_{j=1}^{n_L} (y_j^{\{i\}} - \sigma(z_j^{[L]}))^2
-\end{align*}
+\item recall:\quad $a^{[L]} = \sigma(z_j^{[L]})$,\quad $\displaystyle z_j^{[L]} = \sum_{k=1}^{n_{L-1}} w_{jk}^{[L]} a_k^{[L-1]} + b_j^{[L]}$
+\item expand the 2-norm and the activation in the cost formula:
+    $$C^{\{i\}}(p) = \frac{1}{2} \sum_{j=1}^{n_L} (y_j^{\{i\}} - \underbrace{\sigma(z_j^{[L]})}_{= a_j^{[L]}})^2$$
+
+\vspace{-4mm}
 \item thus by chain rule:
 \begin{align*}
 \frac{\partial C^{\{i\}}}{\partial w_{jk}^{[L]}} &= \boxed{\frac{\partial C^{\{i\}}}{\partial z_j^{[L]}}}\, \frac{\partial z_j^{[L]}}{\partial w_{jk}^{[L]}} = \boxed{\frac{\partial C^{\{i\}}}{\partial z_j^{[L]}}}\, a_k^{[L-1]} \\
 \frac{\partial C^{\{i\}}}{\partial b_{j}^{[L]}} &= \boxed{\frac{\partial C^{\{i\}}}{\partial z_j^{[L]}}}\, \frac{\partial z_j^{[L]}}{\partial b_{j}^{[L]}} = \boxed{\frac{\partial C^{\{i\}}}{\partial z_j^{[L]}}}
 \end{align*}
     \begin{itemize}
-    \item[$\circ$] the boxed quantity shows up a lot!
+    \item[$\circ$] the boxed quantity shows up a lot, so it gets a name \dots
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -897,9 +897,9 @@ C^{\{i\}}(p) &= \frac{1}{2} \sum_{j=1}^{n_L} (y^{\{i\}} - a^{[L]})^2 = \frac{1}{
     \begin{itemize}
     \item[$\circ$] remember that this is for one data pair $(x^{\{i\}},y^{\{i\}})$
     \end{itemize}
-\item for the \emph{final} layer we have:
+\item for the final layer $\ell=L$ we already have:
 \begin{align*}
-\delta_j^{[L]} &= (y^{\{i\}} - a^{[L]})\, \sigma'(z_j^{[L]}) \\
+\delta_j^{[L]} &= - (y_j^{\{i\}} - a_j^{[L]})\, \sigma'(z_j^{[L]}) \\
 \frac{\partial C^{\{i\}}}{\partial w_{jk}^{[L]}} &= \delta_j^{[L]} a_k^{[L-1]} \\
 \frac{\partial C^{\{i\}}}{\partial b_{j}^{[L]}} &= \delta_j^{[L]}
 \end{align*}
@@ -910,11 +910,11 @@ C^{\{i\}}(p) &= \frac{1}{2} \sum_{j=1}^{n_L} (y^{\{i\}} - a^{[L]})^2 = \frac{1}{
 \begin{frame}{chain rule on the cost}
 
 \begin{itemize}
-\item going deeper into the network, follow multiple routes
+\item going deeper into the network one must follow multiple routes
     \begin{itemize}
     \item[$\circ$] $a_j^{[L]}$ depends on $a_k^{[L-1]}$ for different $k$, then $a_k^{[L-1]}$ depends on $a_s^{[L-2]}$ for different $s$, \dots
     \end{itemize}
-\item example: differentiate cost $C^{\{i\}}$ with respect to \small ${\color{red} w_{43}^{[3]}}$\normalsize?
+\item example: \quad what is derivative of cost $C^{\{i\}}$ with respect to \small ${\color{red} w_{43}^{[3]}}$\normalsize?
 
 \begin{center}
 \includegraphics[width=0.4\textwidth]{figs/bigredw}
@@ -923,29 +923,60 @@ C^{\{i\}}(p) &= \frac{1}{2} \sum_{j=1}^{n_L} (y^{\{i\}} - a^{[L]})^2 = \frac{1}{
 \end{frame}
 
 
-\begin{frame}{chain rule on the cost}
+\begin{frame}{find inside the chain rule: multiplication by the transpose}
 
 \hfill \includegraphics[width=0.2\textwidth]{figs/cleannet}
 
 \vspace{-15mm}
 \begin{itemize}
-\item example if $L=4$:
+\item example if $L=4$, for a neuron in layer $\ell=3$:
+   $$\frac{\partial C^{\{i\}}}{\partial w_{jk}^{[3]}} = \underbrace{\frac{\partial C^{\{i\}}}{\partial z_{j}^{[3]}}}_{multi-route} \underbrace{\frac{\partial z_{j}^{[3]}}{\partial w_{jk}^{[3]}}}_{easy} = \delta_j^{[3]} a_{k}^{[2]}$$
+\item but $\delta_j^{[3]}$ relates to the \emph{next}-layer deltas $\delta_s^{[4]}$ by matrix multiplication:
 \begin{align*}
-\frac{\partial C^{\{i\}}}{\partial w_{jk}^{[3]}} &= \underbrace{\frac{\partial C^{\{i\}}}{\partial a_{j}^{[3]}}}_{\text{multi-route}} \underbrace{\frac{\partial a_{j}^{[3]}}{\partial w_{jk}^{[3]}}}_{\text{simple}} \\
-  &= \sum_{s=1}^{n_4} FIXME \frac{\partial a_{j}^{[3]}}{\partial z_{j}^{[3]}} \frac{\partial z_{j}^{[3]}}{\partial w_{jk}^{[3]}} 
+\delta_j^{[3]} = \frac{\partial C^{\{i\}}}{\partial z_{j}^{[3]}} &= \sum_{s=1}^{n_4} \frac{\partial C^{\{i\}}}{\partial z_{s}^{[4]}} \frac{\partial z_{s}^{[4]}}{\partial z_{j}^{[3]}} \\
+  &= \sum_{s=1}^{n_4} \delta_s^{[4]} \frac{\partial z_{s}^{[4]}}{\partial a_{j}^{[3]}} \frac{\partial a_{j}^{[3]}}{\partial z_{j}^{[3]}} \\
+  &= \sum_{s=1}^{n_4} \delta_s^{[4]} w_{sj}^{[4]} \sigma'(z_{j}^{[3]}) = \left((W^{[4]})^\top \delta^{[4]}\right)_j \sigma'(z_{j}^{[3]})
 \end{align*}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{back-propagation $=$ chain rule}
+\begin{frame}{the heart of back-propagation}
 
 \begin{itemize}
-\item latex
-\item beamer
+\item define the entrywise (\emph{Hadamard}?) product of vectors $x,y\in\RR^m$:
+    $$(x\circ y)_j = x_j y_j$$
+
+\begin{lemma}
+$\displaystyle \delta^{[\ell]} = \left[\frac{\partial C^{\{i\}}}{\partial z_j^{[\ell]}}\right]  \in \RR^{n_{\ell}}$ can be computed by (back-) multiplying the weight matrix transposes (adjoints):
+\begin{align*}
+\delta^{[L]} &= \sigma'(z^{[L]}) \circ (a^{[L]} - y^{\{i\}}), \\
+\delta^{[\ell]} &= \sigma'(z^{[\ell]}) \circ \underbrace{(W^{[4]})^\top \delta^{[\ell+1]}}_{\text{matrix-vector product}}, \qquad \ell = L-2,L-3,\dots,2
+\end{align*}
+\end{lemma}
+
+\bigskip
+\item \emph{key point:} start with last layer $\ell=L$ and count \emph{down} to $\ell=2$
 \end{itemize}
 \end{frame}
 
+
+\begin{frame}{back-propagation provides the cost gradient}
+
+\begin{corollary}
+once the $\delta^{[\ell]}$ are calculated, all components of the gradient are easy:
+\begin{align*}
+\frac{\partial C^{\{i\}}}{\partial w_{jk}^{[\ell]}} &= \delta_j^{[\ell]} a_k^{[\ell-1]}, \\
+\frac{\partial C^{\{i\}}}{\partial b_{j}^{[\ell]}} &= \delta_j^{[\ell]}
+\end{align*}
+for $\ell = 2,\dots,L$
+\end{corollary}
+
+\bigskip
+\begin{itemize}
+\item \emph{convenient point:}  after the $\delta^{[\ell]}$ are calculated, one can compute the components of the cost gradient in any order
+\end{itemize}
+\end{frame}
 
 \begin{frame}{fixme}
 
