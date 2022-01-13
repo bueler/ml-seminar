@@ -124,6 +124,28 @@
   \maketitle
 \end{frame}
 
+
+\begin{frame}{\emph{participant}-driven seminar logistics}
+
+\begin{itemize}
+\item sign-up sheet!
+\item my existing webpages:
+    \begin{itemize}
+    \item[$\circ$] \href{http://bueler.github.io/M692S22/index.html}{\texttt{bueler.github.io/M692S22}}
+    \item[$\circ$] \href{https://github.com/bueler/ml-seminar}{\texttt{github.com/bueler/ml-seminar}}
+    \end{itemize}
+\item in-person or hybrid?
+    \begin{itemize}
+    \item[$\circ$] is this classroom adequate?
+    \end{itemize}
+\item what will be the topics?
+    \begin{itemize}
+    \item[$\circ$] are there out-of-bounds topics?
+    \item[$\circ$] who is volunteering to talk?
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
 \begin{frame}{today's talk}
 
 \begin{itemize}
@@ -172,28 +194,6 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \item I am no expert on what I am talking about here
 \item many in room know more than me
 \item I volunteered to give one intro talk, that's all!
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{\emph{participant}-driven seminar logistics}
-
-\begin{itemize}
-\item sign-up sheet!
-\item my existing webpages:
-    \begin{itemize}
-    \item[$\circ$] \href{http://bueler.github.io/M692S22/index.html}{\texttt{bueler.github.io/M692S22}}
-    \item[$\circ$] \href{https://github.com/bueler/ml-seminar}{\texttt{github.com/bueler/ml-seminar}}
-    \end{itemize}
-\item in-person or hybrid?
-    \begin{itemize}
-    \item[$\circ$] is this classroom adequate?
-    \end{itemize}
-\item what will be the topics?
-    \begin{itemize}
-    \item[$\circ$] are there out-of-bounds topics?
-    \item[$\circ$] who is volunteering to talk?
-    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -304,6 +304,27 @@ sigmoid \hspace{42mm} ReLU \phantom{fo}
 \hfill \includegraphics[width=0.9\textwidth]{figs/b-single-neuron}
 \end{column}
 \end{columns}
+\end{frame}
+
+
+\begin{frame}{history and naming}
+\begin{itemize}
+\item Rosenblatt (1958): from biological motivation, proposes a \alert{perceptron}, a single artificial neuron with binary output:
+    $$\sigma(z) = \begin{cases} 1, & z > 0 \\ 0, & z \le 0 \end{cases}$$
+
+    \begin{itemize}
+    \item[$\circ$] with learning algorithm
+    \end{itemize}
+\item Minsky \& Papert (1969): a single layer of perceptrons cannot learn the XOR function
+    \begin{itemize}
+    \item[$\circ$] single layer perceptrons are \alert{linear separators}
+    \item[$\circ$] \emph{support vector machines} are \emph{perceptrons of optimal stability}
+    \end{itemize}
+\item feedforward artificial neural networks (ANN; next!) are sometimes called \emph{multilayer perceptrons}
+    \begin{itemize}
+    \item[$\circ$] \dots which ignores activation function details
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
 
