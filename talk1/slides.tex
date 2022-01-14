@@ -129,11 +129,6 @@
 
 \begin{itemize}
 \item sign-up sheet!
-\item my existing webpages:
-    \begin{itemize}
-    \item[$\circ$] \href{http://bueler.github.io/M692S22/index.html}{\texttt{bueler.github.io/M692S22}}
-    \item[$\circ$] \href{https://github.com/bueler/ml-seminar}{\texttt{github.com/bueler/ml-seminar}}
-    \end{itemize}
 \item in-person or hybrid?
     \begin{itemize}
     \item[$\circ$] is this classroom adequate?
@@ -141,7 +136,12 @@
 \item what will be the topics?
     \begin{itemize}
     \item[$\circ$] are there out-of-bounds topics?
-    \item[$\circ$] who is volunteering to talk?
+    \item[$\circ$] who is volunteering to talk, and when?
+    \end{itemize}
+\item my existing webpages \dots improvements?
+    \begin{itemize}
+    \item[$\circ$] \href{http://bueler.github.io/M692S22/index.html}{\texttt{bueler.github.io/M692S22}}
+    \item[$\circ$] \href{https://github.com/bueler/ml-seminar}{\texttt{github.com/bueler/ml-seminar}}
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -167,22 +167,21 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 \end{frame}
 
 
-\begin{frame}{today's talk}
+\begin{frame}{goal for today}
 
 \begin{itemize}
-\item \alert{goal for today.} know the meanings of ML language:
+\item know the meanings of some machine learning (ML) language:
 
 \medskip
 \small
 \qquad \begin{tabular}{ll}
-\emph{artificial neuron} \qquad & \emph{activation function} \\
+\emph{artificial neuron} \qquad\qquad & \emph{activation function} \\
 \emph{weight matrix} & \emph{bias vector} \\
 \emph{training} & \emph{stochastic gradient descent} \\
 \emph{back-propagation}
 \end{tabular}
 
 \medskip
-\item ML = machine learning
 \item which standard mathematical concept(s) match these buzzwords?
 \end{itemize}
 \end{frame}
@@ -192,7 +191,9 @@ C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bisho
 
 \begin{itemize}
 \item I am no expert on what I am talking about here
-\item many in room know more than me
+    \begin{itemize}
+    \item[$\circ$] many in the room know more than me
+    \end{itemize}
 \item I volunteered to give one intro talk, that's all!
 \end{itemize}
 \end{frame}
@@ -289,7 +290,7 @@ sigmoid \hspace{42mm} ReLU \phantom{fo}
 \begin{columns}
 \begin{column}{0.6\textwidth}
 \begin{itemize}
-\item a \alert{trained neuron} is one with known parameters ${\color{blue} w},{\color{ForestGreen} b}$
+\item a \alert{trained neuron} has known parameters ${\color{blue} w},{\color{ForestGreen} b}$
 \item then ${\color{red} a}:\RR^n \to \RR^1$ is a known function:
     $${\color{red} a} = {\color{red} a}(v)$$
 
@@ -315,12 +316,12 @@ sigmoid \hspace{42mm} ReLU \phantom{fo}
     \begin{itemize}
     \item[$\circ$] with learning algorithm
     \end{itemize}
-\item Minsky \& Papert (1969): a single layer of perceptrons cannot learn the XOR function
+\item Minsky \& Papert (1969): a single layer of perceptrons cannot even learn the XOR function!
     \begin{itemize}
-    \item[$\circ$] single layer perceptrons are \alert{linear separators}
-    \item[$\circ$] \emph{support vector machines} are \emph{perceptrons of optimal stability}
+    \item[$\circ$] single layer perceptrons are linear separators
+    \item[$\circ$] \alert{support vector machines} are perceptrons of optimal stability
     \end{itemize}
-\item feedforward artificial neural networks (ANN; next!) are sometimes called \emph{multilayer perceptrons}
+\item feedforward artificial neural networks (ANN), the next topic, are sometimes called \alert{multilayer perceptrons}
     \begin{itemize}
     \item[$\circ$] \dots which ignores activation function details
     \end{itemize}
@@ -342,11 +343,11 @@ sigmoid \hspace{42mm} ReLU \phantom{fo}
 \end{center}
 
 \begin{itemize}
-\item considering only \alert{feed-forward} networks
+\item considering only \alert{feed-forward} networks in this talk
     \begin{itemize}
     \item[$\circ$] edges connect consecutive layers, in order
     \item[$\circ$] in ML language: feed-forward versus \alert{recurrent}
-    \item[$\circ$] in graph language: ``feed-forward network'' $=$ connected, directed acyclic graph which is equal to its own transitive reduction
+    \item[$\circ$] in graph language: ``feed-forward network'' $=$ connected, directed acyclic graph which is equal to its own transitive reduction \dots ?
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -362,9 +363,9 @@ sigmoid \hspace{42mm} ReLU \phantom{fo}
 \item notation from HH19
 \item ${\color{red} n_\ell}$ is number of neurons in layer $\ell=1,\dots,L$
     \begin{itemize}
-    \item[$\circ$] $\ell=1$ is \alert{input} layer
+    \item[$\circ$] $\ell=1$ is input layer
     \item[$\circ$] input values are first-layer activations: $x = {\color{blue} a^{[1]}} \in \RR^{{\color{red} n_1}}$
-    \item[$\circ$] $\ell=L$ is \alert{output} layer
+    \item[$\circ$] $\ell=L$ is output layer
     \item[$\circ$] output values are final-layer activations: $y = {\color{blue} a^{[L]}} \in \RR^{{\color{red} n_L}}$
     \end{itemize}
 \item activations in layer $\ell$ form a vector ${\color{blue} a^{[\ell]}} \in \RR^{{\color{red} n_\ell}}$
@@ -399,7 +400,7 @@ sigmoid \hspace{42mm} ReLU \phantom{fo}
 \begin{itemize}
 \item one (row) vector of weights for each neuron
 \item the inputs to the neurons in a layer are weighted by a matrix:
-    $${\color{ForestGreen} W^{[\ell]}} = \left(\text{weights into layer $\ell$}\right) = \begin{bmatrix} {\color{ForestGreen} w_{jk}^{[\ell]}} \end{bmatrix}$$
+    $${\color{ForestGreen} W^{[\ell]}} = \left(\text{weights \emph{into} layer $\ell$}\right) = \begin{bmatrix} {\color{ForestGreen} w_{jk}^{[\ell]}} \end{bmatrix}$$
 
     \begin{itemize}
     \item[$\circ$] ${\color{ForestGreen} W^{[\ell]}}$ is $n_{\ell}\times n_{\ell-1}$
@@ -408,7 +409,7 @@ sigmoid \hspace{42mm} ReLU \phantom{fo}
     $${\color{blue} a^{[\ell]}} = \sigma\left({\color{ForestGreen} W^{[\ell]}} {\color{blue} a^{[\ell-1]}} + b^{[\ell]}\right)$$
 
     \begin{itemize}
-    \item[$\circ$] also: bias vector $b^{[\ell]} \in \RR^{n_{\ell}}$
+    \item[$\circ$] bias vector $b^{[\ell]} \in \RR^{n_{\ell}}$
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -424,10 +425,9 @@ sigmoid \hspace{42mm} ReLU \phantom{fo}
 \item for this small $L=4$ network:
 \begin{align*}
 y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
-            &= \sigma\left(W^{[4]} \sigma\left(W^{[3]} \sigma\left(W^{[2]} a^{[1]} + b^{[2]}\right) + b^{[3]}\right) + b^{[4]}\right) \\
             &= \sigma\left(W^{[4]} \sigma\left(W^{[3]} \sigma\left(W^{[2]} x + b^{[2]}\right) + b^{[3]}\right) + b^{[4]}\right)
 \end{align*}
-\item \emph{simplified:} if $\sigma(z)=z$ and $b^{[\ell]}=0$ then $y = W^{[4]} W^{[3]} W^{[2]} x$
+\item \emph{over-simplified:} $\sigma(z)=z$ and $b^{[\ell]}=0$ implies $y = W^{[4]} W^{[3]} W^{[2]} x$
 \item feed-forward network = nonlinear- \& affine-ized matrix product
 \end{itemize}
 \end{frame}
@@ -442,7 +442,7 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
     \begin{itemize}
     \item[$\circ$] equation (3.2) in HH19
     \end{itemize}
-\item a forward pass is an obvious loop:
+\item thus a forward pass is an obvious loop:
 
 \begin{pseudo*}
 \pr{forward}(x)\text{:} \\+
@@ -473,7 +473,6 @@ y = a^{[4]} &= \sigma\left(W^{[4]} a^{[3]} + b^{[4]}\right) = \dots \\
     \item[$\circ$] evaluating activation functions is cheap
     \item[$\circ$] the work at one layer is basically just a matrix-vector product
     \end{itemize}
-\item let $n_{\text{max}} =\max\{n^{[\ell]}\}$, the maximum layer size
 \item the total forward-pass work in an $L$-layer network is asymptotically the same as $L$ matrix-vector products:
     $$\sum_{\ell=2}^L O(n^{[\ell-1]} n^{[\ell]}) = O(L n_{\text{max}}^{\,2})$$
 \item \emph{note:} a forward pass is easily computed by GPU hardware
@@ -1125,35 +1124,111 @@ integrate SGD into the \textsc{forback()} loop; see \texttt{netbp.m} in HH19:
 \end{frame}
 
 
+\section{future topics}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
+\end{frame}
+
 \begin{frame}{there is so much more to say}
 
 \begin{itemize}
-\item there is much more to say about what we have already seen
-\item and I am not going to say it here!
+\item please actually read HH19?
+\item next are 4 topics which might catch your interest as a talk
     \begin{itemize}
-    \item[$\circ$] but please actually read HH19!
+    \item[$\circ$] these topics have math inside!
     \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\section{future topics}
-
-\begin{frame}{future topics?}
+\begin{frame}{convolutional neural networks (CNN)}
 
 \begin{itemize}
-\item convolutional neural networks = CNN
-\item recurrent neural networks = RNN
-\item graph neural networks = GNN
-\item Newton and Quasi-Newton optimization methods
+\item based on discrete convolution of time series and images
     \begin{itemize}
-    \item[$\circ$] L-BFGS
+    \item[$\circ$] a talk to explain convolution, \emph{sans} neural nets?
     \end{itemize}
+\item CNNs win at image classification
+\item example given in HH19
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=\textwidth]{figs/HH19-cnnimage}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{autoencoders}
+
+\begin{itemize}
+\item one form of \emph{unsupervised training}
+\item fit the identity map with a fancy nonlinear function (!)
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{figs/autoencoder}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{support vector machines}
+
+\begin{itemize}
+\item recall: ``single layer perceptrons can't compute XOR''
+    \begin{itemize}
+    \item[$\circ$] linearly-separable classification problems
+    \end{itemize}
+\item support vector machines (SVM)
+    \begin{itemize}
+    \item[$\circ$] add stable optimality to linearly-separable classification
+    \end{itemize}
+\end{itemize}
+
+\medskip
+\begin{center}
+\includegraphics[width=0.5\textwidth]{figs/svm}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{stochastic optimization}
+
+\begin{itemize}
 \item stochastic optimization
     \begin{itemize}
-    \item[$\circ$] online machine learning
-    \item[$\circ$] Adam
+    \item[$\circ$] the objective function is random; the goal is to minimize the expected objective value
+    \item[$\circ$] SGD is well-suited for this goal?
     \end{itemize}
+\item online machine learning model
+\item improvements on SGD
+    \begin{itemize}
+    \item[$\circ$] momentum
+    \item[$\circ$] dropout
+    \item[$\circ$] Adam ($\rightarrow$), and etc.
+
+\hfill \includegraphics[width=0.35\textwidth]{figs/adam}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{additional topics?}
+
+\begin{itemize}
+\item recurrent neural networks
+\item graph neural networks
+\item algorithmic/automatic differentiation
+\item classical nonlinear least-squares methods
+    \begin{itemize}
+    \item[$\circ$] Gauss-Newton
+    \item[$\circ$] Levenberg-Marquardt
+    \end{itemize}
+\item classical optimization: Newton-type methods
+    \begin{itemize}
+    \item[$\circ$] quasi-Newton methods, especially L-BFGS
+    \end{itemize}
+\item and on and on through the buzzwords \dots
 \end{itemize}
 \end{frame}
 
