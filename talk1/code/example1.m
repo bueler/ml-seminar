@@ -2,7 +2,7 @@ function Pval = example1(optmethod,Niter,figs,repeatable)
 % EXAMPLE1  Run NETBP2 or NETOPT for the main example in
 % Higham & Higham (2019) = HH19.  (Compare NETBPFULL from HH19.)
 % Default solver uses NETBP2 and reproduces Figures 6.1, 6.2 from
-% HH19.  Calls GRIDFORWARD to generate classification figure.
+% HH19.  Calls CLASSFIG to generate classification figure.
 % Usage:
 %   Pval = example1(optmethod,Niter,figs,repeatable)
 % inputs:
@@ -17,7 +17,7 @@ function Pval = example1(optmethod,Niter,figs,repeatable)
 % Examples:
 %   >> example1;                                 % default behavior
 %   >> Pval = example1('sgbp',1e6,true,true);    % also defaults
-%   >> Pval = example1('nm',10000,false,false);  % change defaults
+%   >> Pval = example1('nm',10000,true,false);   % sometimes finds a global min
 
 % settings
 if nargin < 4,  repeatable = true;  end

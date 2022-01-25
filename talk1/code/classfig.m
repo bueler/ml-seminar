@@ -1,6 +1,6 @@
 function classfig(x1,x2,y,Pval)
 % CLASSFIG  Show classification figure like Figure 2.4 or Figure 6.2
-% in Higham & Higham (2019) = HH19.
+% in Higham & Higham (2019) = HH19.  Calls GRIDFORWARD.
 
 [X,Y,Aval,Bval] = gridforward(Pval);
 Mval = (Aval > Bval);      % compare output neuron values
