@@ -96,7 +96,7 @@
 
 \author{Ed Bueler}
 
-\institute[UAF]{MATH 692 Mathematics for Machine Learning \\ UAF}
+\institute[UAF]{MATH 692 Mathematics for Machine Learning}
 
 \date[Spring 2022]{17 March}
 
@@ -105,16 +105,8 @@
 %  \end{picture}
 %}
 
-%% this nonsense needed to start section counter at 0; see
+%% to start section counter at 0 see
 %% https://tex.stackexchange.com/questions/170222/change-the-numbering-in-beamers-table-of-content
-\makeatletter
-\patchcmd{\beamer@sectionintoc}
-  {\ifnum\beamer@tempcount>0}
-  {\ifnum\beamer@tempcount>-1}
-  {}
-  {}
-%\beamer@tocsectionnumber=-1
-\makeatother
 
 
 \begin{document}
@@ -125,16 +117,247 @@
 \end{frame}
 
 
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections]
+\end{frame}
 
-\begin{frame}{today's talk}
+
+\section{online optimization framework}
+
+\begin{frame}{training a neural net ($=$ recalling where we were)}
+
+\begin{itemize}
+\item forward pass through an artificial neural net with $L$ layers:
+
+\begin{columns}
+\begin{column}{0.1\textwidth}
+$x^{\{i\}}\to$ 
+\end{column}
+\begin{column}{0.4\textwidth}
+\includegraphics[height=30mm]{figs/cleannet.png}
+\end{column}
+\begin{column}{0.45\textwidth}
+$\to a^{[L]}$ \hfill (supposed to be $y^{\{i\}}$)
+\end{column}
+\end{columns}
+
+\item output activations are a function of input and parameters:
+    $$a^{[L]} = a^{[L]}(x^{\{i\}}; p)$$
+\item parameters $p$ collect weights and biases:
+    $$p=\{W^{[2]},\dots,W^{[L]},b^{[2]},\dots,b^{[L]}\} \in \RR^n$$
+\item cost of one labeled pair $(x^{\{i\}},y^{\{i\}})$:
+    $$C^{\{i\}}(p) = \frac{1}{2} \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}}; p)\right\|_2^2$$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{total cost objective versus online}
+
+\begin{block}{training set total cost}
+\textbf{goal:}  minimize total cost over fixed training set
+    $$C(p) = \frac{1}{N} \sum_{i=1}^N C^{\{i\}}(p)$$
+\end{block}
+
+\begin{block}{online training $=$ sequence of cost objectives}
+assume infinite sequence of labeled pairs, equivalently of cost functionals:
+    $$c_i(p) = C^{\{i\}}(p)$$
+train your neural net a little for each $c_i$
+
+\textbf{but what's the goal?}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{online training algorithms}
+
+\begin{itemize}
+\item $p_1$ is the initial iterate for the parameters
+\item an \emph{online training algorithm} computes a new iterate $p_{j+1}$
+    \begin{itemize}
+    \item[$\circ$] generally, $p_{j+1}$ could be computed from all previous cost functionals $\{c_1,c_2,\dots,c_j\}$ and parameter iterates $\{p_1,p_2,\dots,p_j\}$
+    \item[$\circ$] ``online'' $=$ we do not use future cost functionals
+    \end{itemize}
+\end{itemize}
+
+\bigskip
+\textbf{examples.}
+\begin{itemize}
+\item gradient descent with varying learning rates $\eta_j$:
+   $$p_{j+1} = p_j - \eta_j \grad c_j(p_j)$$
+\item Adam (\emph{more later})
+\item Adaline, Adadelta, Adagrad, RMSprop, mini-batching, \dots
+    \begin{itemize}
+    \item[$\circ$] google \quad \texttt{tensorflow optimizers}
+    \end{itemize}
+\item a (quasi-)Newton method which uses/constructs second derivative information
+\end{itemize}
+\end{frame}
+
+
+\section{regret}
+
+\begin{frame}{regret of a training algorithm}
+
+\begin{block}{\textbf{definition}}
+the \emph{regret} of a training algorithm, at the $k$th step, is
+    $$R_k = \sum_{j=1}^k c_j(p_j) - \min_p \sum_{j=1}^k c_j(p)$$
+\end{block}
+
+\begin{itemize}
+\item regret is the difference between accumulating algorithm result and best possible result from a single parameter setting
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{regret in an game}
+
+\begin{itemize}
+\item regret arises in game theory
+\item treat the algorithm as a \emph{player} and the online stream of cost functionals $c_j$ as an \emph{adversary}
+\item the player chooses $p_j$ \underline{before} knowing $c_j$
+\end{itemize}
+
+\begin{block}{online convex game (Abernathy et al 2008)}
+\begin{pseudo*}
+for $j = 1,2,\dots,k$: \\+
+    \st{player chooses} $p_{j}$ \\
+    \st{adversary chooses} $c_{j}$ \\-
+end \\
+\st{player suffers regret} \\+
+    $\ds R_k = \sum_{j=1}^k c_j(p_j) - \min_p \sum_{j=1}^k c_j(p)$
+\end{pseudo*}
+\end{block}
+
+\begin{itemize}
+\item $R_k>0$: the player regrets not choosing $p = \operatorname{argmin} \sum_{j=1}^k c_j(p)$
+\item but negative regret is possible!
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{convex sets and functions}
+
+\begin{itemize}
+\item previous slide says ``convex''; we need the definition
+\end{itemize}
+
+\begin{block}{definition}
+\begin{itemize}
+\item a set $K \subset \RR^n$ is \emph{convex} if for all $x,y \in K$ and $0 \le t \le 1$,
+  $$t\, x + (1-t) y \in K$$
+
+    \begin{itemize}
+    \item[$\circ$] the line segment from $x$ to $y$ is inside $K$
+    \end{itemize}
+\item a function $f:K \to \RR$ is \emph{convex} if for all $x,y \in K$ and $0 \le t \le 1$,
+  $$t\, f(x) + (1-t) f(y) \ge f(t\, x + (1-t) y)$$
+\end{itemize}
+\end{block}
+
+\begin{itemize}
+\item for $f:K\to \RR$ to be convex, note $K$ must be convex
+\item convex = concave \emph{up}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{convex optimization}
+
+\begin{block}{definition}
+given a convex set $K \subset \RR^n$ and a convex function $f:K\to \RR$, we say that the problem
+    $$\min_{p \in K} f(p)$$
+is a \emph{convex optimization problem}
+\end{block}
+
+\begin{itemize}
+\item SVM is convex optimization, with nontrivial $K$
+\item for an ANN, when is $C^{\{i\}}(p) = \frac{1}{2} \left\|y^{\{i\}} - a^{[L]}(x^{\{i\}}; p)\right\|_2^2$ a convex function on $K = \RR^n$?
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{online convex optimization}
+
+\begin{block}{definition}
+\emph{online convex optimization}:  fix a convex set $K\subset \RR^n$, assume a sequence of convex functions $c_j:K\to \RR$, and seek to solve
+    $$\min_{p_j \in K} c_j(p_j) \quad \text{or} \quad \min_{p \in K} \sum_{j=1}^k c_j(p)$$
+\end{block}
+
+\begin{itemize}
+\item online convex optimization = online convex programming
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{regarding regret}
+
+  $$R_k = \underbrace{\sum_{j=1}^k c_j(p_j)}_{\text{online alg.~result}} - \,\, \underbrace{\min_p \sum_{j=1}^k c_j(p)}_{\text{offline result}}$$
+
+\begin{itemize}
+\item some thoughts from Zinkevich (2003):
+
+\medskip
+\begin{quote}
+[We] cannot hope to choose a point $p_j$ that minimizes $c_j$, because $c_j$ can be anything. Instead we try to minimize regret.
+\end{quote}
+
+\begin{quote}
+If the sequence of cost functions is relatively stationary, then an online algorithm can learn what the cost functions will look like in the future.  If the sequence of cost functions varies drastically, then the offline algorithm will not be able to take advantage of this because it selects a [single $p$].
+\end{quote}
+
+\item in any case, when we minimize regret there is \textbf{no distributional assumption} about the cost functions $c_j$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{fixme}
 
 \begin{itemize}
 \item fixme
+\end{itemize}
+\end{frame}
 
-\begin{center}
-\includegraphics[height=30mm]{figs/cleannet.png}
-\end{center}
+\begin{frame}{fixme}
 
+\begin{itemize}
+\item fixme
+\end{itemize}
+\end{frame}
+
+
+\section{``stochastic'' gradient descent has $O(\sqrt{k})$ regret}
+
+\begin{frame}{Zinkevich proof}
+
+\begin{itemize}
+\item fixme
+\end{itemize}
+\end{frame}
+
+\begin{frame}{we can see how Newton could be worse}
+
+\begin{itemize}
+\item fixme
+\end{itemize}
+\end{frame}
+
+
+\section{Adam's regret}
+
+\begin{frame}{fixme}
+
+\begin{itemize}
+\item fixme
+\end{itemize}
+\end{frame}
+
+
+\section{versus ``empirical risk'' framework}
+
+\begin{frame}{fixme}
+
+\begin{itemize}
+\item fixme
 \end{itemize}
 \end{frame}
 
