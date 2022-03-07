@@ -92,7 +92,7 @@
 
 \title{Online optimization}
 
-\subtitle{\emph{what's the goal of ML training algorithms? minimize regret!}}
+\subtitle{\emph{ML training algorithms minimize regret}}
 
 \author{Ed Bueler}
 
@@ -124,7 +124,7 @@
 
 \section{online optimization framework}
 
-\begin{frame}{training a neural net ($=$ recalling where we were)}
+\begin{frame}{training a neural net ($=$ recalling my earlier talk)}
 
 \begin{itemize}
 \item forward pass through an artificial neural net with $L$ layers:
@@ -154,15 +154,16 @@ $\to a^{[L]}$ \hfill (supposed to be $y^{\{i\}}$)
 \begin{frame}{total cost objective versus online}
 
 \begin{block}{training set total cost}
-\textbf{goal:}  minimize total cost over fixed training set
+\textbf{original goal:}  minimize total cost over fixed training set
     $$C(p) = \frac{1}{N} \sum_{i=1}^N C^{\{i\}}(p)$$
 \end{block}
 
 \begin{block}{online training $=$ sequence of cost objectives}
 assume infinite sequence of labeled pairs, equivalently of cost functionals:
     $$c_i(p) = C^{\{i\}}(p)$$
-train your neural net a little for each $c_i$
+\textbf{method:} train neural net incrementally, a little for each $c_i$
 
+\bigskip
 \textbf{but what's the goal?}
 \end{block}
 \end{frame}
@@ -172,9 +173,9 @@ train your neural net a little for each $c_i$
 
 \begin{itemize}
 \item $p_1$ is the initial iterate for the parameters
-\item an \emph{online training algorithm} computes a new iterate $p_{j+1}$
+\item an \emph{online training algorithm} computes each new iterate $p_{j+1}$
     \begin{itemize}
-    \item[$\circ$] generally, $p_{j+1}$ could be computed from all previous cost functionals $\{c_1,c_2,\dots,c_j\}$ and parameter iterates $\{p_1,p_2,\dots,p_j\}$
+    \item[$\circ$] generally, $p_{j+1}$ can be computed from all previous cost functionals $\{c_1,c_2,\dots,c_j\}$ and parameter iterates $\{p_1,p_2,\dots,p_j\}$
     \item[$\circ$] ``online'' $=$ we do not use future cost functionals
     \end{itemize}
 \end{itemize}
@@ -182,14 +183,14 @@ train your neural net a little for each $c_i$
 \bigskip
 \textbf{examples.}
 \begin{itemize}
-\item gradient descent with varying learning rates $\eta_j$:
+\item ``stochastic'' gradient descent with varying learning rates $\eta_j$:
    $$p_{j+1} = p_j - \eta_j \grad c_j(p_j)$$
 \item Adam (\emph{more later})
 \item Adaline, Adadelta, Adagrad, RMSprop, mini-batching, \dots
     \begin{itemize}
-    \item[$\circ$] google \quad \texttt{tensorflow optimizers}
+    \item[$\circ$] google search for buzzwords: \quad \texttt{tensorflow optimizers}
     \end{itemize}
-\item a (quasi-)Newton method which uses/constructs second derivative information
+\item online (quasi-)Newton methods; use/construct 2nd derivatives
 \end{itemize}
 \end{frame}
 
@@ -204,15 +205,14 @@ the \emph{regret} of a training algorithm, at the $k$th step, is
 \end{block}
 
 \begin{itemize}
-\item regret is the difference between accumulating algorithm result and best possible result from a single parameter setting
+\item regret is the difference between the algorithm result and the best possible result from a single parameter setting
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{regret in an game}
+\begin{frame}{regret arose in game theory}
 
 \begin{itemize}
-\item regret arises in game theory
 \item treat the algorithm as a \emph{player} and the online stream of cost functionals $c_j$ as an \emph{adversary}
 \item the player chooses $p_j$ \underline{before} knowing $c_j$
 \end{itemize}
@@ -291,19 +291,10 @@ is a \emph{convex optimization problem}
 
 \begin{frame}{regarding regret}
 
-  $$R_k = \underbrace{\sum_{j=1}^k c_j(p_j)}_{\text{online alg.~result}} - \,\, \underbrace{\min_p \sum_{j=1}^k c_j(p)}_{\text{offline result}}$$
-
 \begin{itemize}
-\item some thoughts from Zinkevich (2003):
-
-\medskip
-\begin{quote}
-[We] cannot hope to choose a point $p_j$ that minimizes $c_j$, because $c_j$ can be anything. Instead we try to minimize regret.
-\end{quote}
-
-\begin{quote}
-If the sequence of cost functions is relatively stationary, then an online algorithm can learn what the cost functions will look like in the future.  If the sequence of cost functions varies drastically, then the offline algorithm will not be able to take advantage of this because it selects a [single $p$].
-\end{quote}
+\item Zinkevich (2003): \emph{We cannot hope to choose a point $p_j$ that minimizes $c_j$, because $c_j$ can be anything. Instead we try to minimize regret.}
+  $$R_k = \underbrace{\sum_{j=1}^k c_j(p_j)}_{\text{online alg.~result}} - \,\, \underbrace{\min_p \sum_{j=1}^k c_j(p)}_{\text{offline result}}$$
+\noindent \emph{If the sequence of cost functions $\{c_j\}$ is relatively stationary, then an online algorithm can learn what the cost functions will look like in the future.  If the sequence of cost functions varies drastically, then the offline algorithm will not be able to take advantage of this because it selects a single $p$.}
 
 \item in any case, when we minimize regret there is \textbf{no distributional assumption} about the cost functions $c_j$
 \end{itemize}
@@ -352,7 +343,7 @@ If the sequence of cost functions is relatively stationary, then an online algor
 \end{frame}
 
 
-\section{versus ``empirical risk'' framework}
+\section{alternative framework: empirical risk}
 
 \begin{frame}{fixme}
 
@@ -366,17 +357,17 @@ If the sequence of cost functions is relatively stationary, then an online algor
 
 \begin{itemize}
 \footnotesize
+\item J.~D.~Abernathy, P.~Bartlett, A.~Rakhlin, and A.~Tewari, \href{https://www2.eecs.berkeley.edu/Pubs/TechRpts/2008/EECS-2008-19.pdf}{\emph{Optimal strategies and minimax lower bounds for online convex games}}, UC Berkeley Tech.~Rep.~UCB/EECS-2008-19, 2008
 \item L.~Bottou, \href{http://leon.bottou.org/papers/bottou-98x}{\emph{Online algorithms and stochastic approximations.}}  In D.~Saad, ed., \emph{Online Learning and Neural Networks}, Cambridge University Press, 1998
     \begin{itemize}
     \scriptsize
     \item[$-$] first sentence: \emph{Almost all of the early work on Learning Systems focused on online algorithms (Hebb, 1949; Rosenblatt, 1957; Widrow and Hoff, 1960; Amari, 1967; Kohonen, 1982).}
-    \item[$-$] regret, or any other non-stochastic framework, is not mentioned
+    \item[$-$] regret is not mentioned
     \end{itemize}
 \item I.~Goodfellow, Y.~Bengio, \& A.~Courville, \href{https://www.deeplearningbook.org/}{\emph{Deep Learning.}} MIT Press, 2016
     \begin{itemize}
     \scriptsize
-    \item[$-$] Chapter 8 addresses empirical risk
-    \item[$-$] online optimization is not mentioned
+    \item[$-$] Chapter 8 addresses empirical risk, but online optimization is not mentioned
     \end{itemize}
 \item D.~P.~Kingma \& J.~Ba (2014). \href{https://arxiv.org/abs/1412.6980}{\emph{Adam: A method for stochastic optimization.}}, preprint arXiv:1412.6980.
     \begin{itemize}
