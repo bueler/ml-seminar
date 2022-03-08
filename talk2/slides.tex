@@ -122,6 +122,38 @@
 \end{frame}
 
 
+\begin{frame}{but first, why am I talking about online optimization?}
+
+\begin{itemize}
+\item my motivations:
+    \begin{itemize}
+    \item[$-$] speaking as an optimization teacher: why is SGD so popular?
+    \item[$-$] speaking as a numerical analyst: is my algorithm better than yours?
+    \end{itemize}
+
+\medskip
+\item in trying to get my bearings, it was easy to stumble on:
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{figs/adam-paper.png}
+\end{center}
+
+\medskip
+    \begin{itemize}
+    \item[$-$] 100651 citations \dots for a conference paper
+    \item[$-$] the Adam optimizer is the default for \href{https://www.tensorflow.org/tutorials/keras/classification}{tensorflow}, \href{https://pytorch.org/docs/stable/optim.html}{pytorch}, \dots
+    \end{itemize}
+
+\medskip
+\item so, how do they show that Adam is good?
+    \begin{itemize}
+    \item[$-$] regret bound
+    \item[$-$] see the remaining slides!
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
 \section{online optimization framework}
 
 \begin{frame}{training a neural net ($=$ recalling my earlier talk)}
@@ -316,16 +348,23 @@ is a \emph{convex optimization problem}
 \end{frame}
 
 
-\section{``stochastic'' gradient descent has $O(\sqrt{k})$ regret}
+\section{analysis of online gradient descent}
 
-\begin{frame}{Zinkevich proof}
+\begin{frame}{Hazan proof}
 
 \begin{itemize}
 \item fixme
 \end{itemize}
 \end{frame}
 
-\begin{frame}{we can see how Newton could be worse}
+\begin{frame}{other algorithms: Newton}
+
+\begin{itemize}
+\item fixme
+\end{itemize}
+\end{frame}
+
+\begin{frame}{other algorithms: FTl}
 
 \begin{itemize}
 \item fixme
@@ -370,7 +409,6 @@ is a \emph{convex optimization problem}
 \item D.~P.~Kingma \& J.~Ba (2014). \href{https://arxiv.org/abs/1412.6980}{\emph{Adam: A method for stochastic optimization}}, preprint arXiv:1412.6980.
     \begin{itemize}
     \scriptsize
-    \item[$-$] 100651 citations
     \item[$-$] cites Zinkevich for online optimization framework
     \end{itemize}
 \item M.~Zinkevich (2003). \href{https://www.aaai.org/Papers/ICML/2003/ICML03-120.pdf}{\emph{Online convex programming and generalized infinitesimal gradient ascent}}, Proceedings of the 20th International Conference on Machine Learning, 928-936
