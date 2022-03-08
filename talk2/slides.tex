@@ -353,36 +353,56 @@ is a \emph{convex optimization problem}
 \end{frame}
 
 
-\begin{frame}{references}
+\begin{frame}{online optimization references}
 
 \begin{itemize}
 \footnotesize
-\item J.~D.~Abernathy, P.~Bartlett, A.~Rakhlin, and A.~Tewari, \href{https://www2.eecs.berkeley.edu/Pubs/TechRpts/2008/EECS-2008-19.pdf}{\emph{Optimal strategies and minimax lower bounds for online convex games}}, UC Berkeley Tech.~Rep.~UCB/EECS-2008-19, 2008
+\item J.~D.~Abernathy, P.~Bartlett, A.~Rakhlin, and A.~Tewari (2008). \href{https://www2.eecs.berkeley.edu/Pubs/TechRpts/2008/EECS-2008-19.pdf}{\emph{Optimal strategies and minimax lower bounds for online convex games}}, UC Berkeley Tech.~Rep.~UCB/EECS-2008-19
+    \begin{itemize}
+    \scriptsize
+    \item[$-$] regret in game context
+    \end{itemize}
+\item E.~Hazan, A.~Agarwal, \& S.~Kale (2007).  \href{https://link.springer.com/content/pdf/10.1007/s10994-007-5016-8.pdf}{\emph{Logarithmic regret algorithms for online convex optimization.}} Machine Learning, 69(2), 169-192
+    \begin{itemize}
+    \scriptsize
+    \item[$-$] improves on Zinkevich regret bound by assuming positive definite Hessians
+    \end{itemize}
+\item D.~P.~Kingma \& J.~Ba (2014). \href{https://arxiv.org/abs/1412.6980}{\emph{Adam: A method for stochastic optimization}}, preprint arXiv:1412.6980.
+    \begin{itemize}
+    \scriptsize
+    \item[$-$] 100651 citations
+    \item[$-$] cites Zinkevich for online optimization framework
+    \end{itemize}
+\item M.~Zinkevich (2003). \href{https://www.aaai.org/Papers/ICML/2003/ICML03-120.pdf}{\emph{Online convex programming and generalized infinitesimal gradient ascent}}, Proceedings of the 20th International Conference on Machine Learning, 928-936
+    \begin{itemize}
+    \scriptsize
+    \item[$-$] shows $O(\sqrt{T})$ regret bound of GD
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{additional references}
+
+\begin{itemize}
+\footnotesize
 \item L.~Bottou, \href{http://leon.bottou.org/papers/bottou-98x}{\emph{Online algorithms and stochastic approximations.}}  In D.~Saad, ed., \emph{Online Learning and Neural Networks}, Cambridge University Press, 1998
     \begin{itemize}
     \scriptsize
-    \item[$-$] first sentence: \emph{Almost all of the early work on Learning Systems focused on online algorithms (Hebb, 1949; Rosenblatt, 1957; Widrow and Hoff, 1960; Amari, 1967; Kohonen, 1982).}
+    \item[$-$] first sentence:
+
+\emph{Almost all of the early work on Learning Systems focused on online algorithms (Hebb, 1949; Rosenblatt, 1957; Widrow and Hoff, 1960; Amari, 1967; ...)}
+
     \item[$-$] regret is not mentioned
     \end{itemize}
 \item I.~Goodfellow, Y.~Bengio, \& A.~Courville, \href{https://www.deeplearningbook.org/}{\emph{Deep Learning.}} MIT Press, 2016
     \begin{itemize}
     \scriptsize
-    \item[$-$] Chapter 8 addresses empirical risk, but online optimization is not mentioned
+    \item[$-$] Chapter 8 addresses empirical risk
+    \item[$-$] online optimization and regret is not mentioned
     \end{itemize}
-\item D.~P.~Kingma \& J.~Ba (2014). \href{https://arxiv.org/abs/1412.6980}{\emph{Adam: A method for stochastic optimization.}}, preprint arXiv:1412.6980.
-    \begin{itemize}
-    \scriptsize
-    \item[$-$] 100651 citations
-    \item[$-$] cites Zinkevich (2003) for online optimization framework
-    \end{itemize}
-\item M.~Zinkevich (2003). \href{https://www.aaai.org/Papers/ICML/2003/ICML03-120.pdf}{\emph{Online convex programming and generalized infinitesimal gradient ascent.}} Proceedings of the 20th International Conference on Machine Learning, 928-936
-%\item C.~F.~Higham \& D.~J.~Higham (2019). \href{http://www.math.stonybrook.edu/~bishop/classes/math533.S21/MachineLearning/SIAMreview.pdf}{\emph{Deep learning: An introduction for applied mathematicians.}} SIAM Review, 61(4), 860-891
 \end{itemize}
 \end{frame}
-
-
-
-
 
 
 \end{document}
