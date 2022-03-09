@@ -92,7 +92,7 @@
 
 \title{Online optimization}
 
-\subtitle{\emph{ML training algorithms minimize regret}}
+\subtitle{\emph{ML training algorithms reduce regret}}
 
 \author{Ed Bueler}
 
@@ -122,15 +122,15 @@
 \end{frame}
 
 
-\begin{frame}{my motivations for online optimization?}
+\begin{frame}{my motivations}
 
 \begin{itemize}
-\item as an optimization teacher: why is SGD so popular?
-\item as a numerical analyst: is my algorithm better than yours?
+\item why is SGD so popular? is my algorithm better than yours?
 
 \medskip
 \item it was easy to stumble upon:
 
+\medskip
 \begin{center}
 \includegraphics[width=0.7\textwidth]{figs/adam-paper.png}
 \end{center}
@@ -142,7 +142,10 @@
     \end{itemize}
 
 \medskip
-\item so, how do they show that Adam is good?
+\item so, how do they analyze Adam and show that it is good?
+    \begin{itemize}
+    \item[] \emph{answer}: this talk
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -152,7 +155,7 @@
 \begin{frame}{training a neural net ($=$ recalling my earlier talk)}
 
 \begin{itemize}
-\item forward pass through an artificial neural net with $L$ layers:
+\item forward pass through an artificial neural net (ANN) with $L$ layers:
 
 \begin{columns}
 \begin{column}{0.1\textwidth}
@@ -176,7 +179,7 @@ $\to a^{[L]}$ \hfill (supposed to be $y^{\{i\}}$)
 \end{frame}
 
 
-\begin{frame}{notation (simplifications)}
+\begin{frame}{notation (standardization and simplification)}
 
 \begin{itemize}
 \item $\theta = p$ is vector of parameters
@@ -187,7 +190,7 @@ $\to a^{[L]}$ \hfill (supposed to be $y^{\{i\}}$)
 \end{frame}
 
 
-\begin{frame}{total cost versus online}
+\begin{frame}{total cost versus online cost sequence}
 
 \begin{block}{total cost of training set}
 \textbf{original goal:}  minimize total (average) cost over fixed training set
@@ -200,7 +203,7 @@ assume infinite sequence of cost functionals:
 \end{block}
 
 \begin{itemize}
-\item online training \textbf{method:} train the neural net incrementally, a little for each $c_i$
+\item the basic online training \textbf{method} is clear: train the neural net incrementally, a little for each $c_i$
 \item \textbf{but what's the new online goal?}
 \end{itemize}
 
@@ -212,8 +215,8 @@ assume infinite sequence of cost functionals:
 \begin{itemize}
 \item somehow choose $\theta_1$ as the initial iterate for the parameters
 \item an \emph{online training algorithm} computes each new iterate $\theta_{i+1}$
-\item generally, $\theta_{i+1}$ can be computed from all previous cost functionals $\{c_1,c_2,\dots,c_i\}$ and parameter iterates $\{\theta_1,\theta_2,\dots,\theta_i\}$
-\item \textbf{key online assumption:} an online algorithm does not use \emph{future} cost functionals in constructing $\theta_{i+1}$:
+\item $\theta_{i+1}$ is computed from previous cost functionals $\{c_1,c_2,\dots,c_i\}$ and (parameter) iterates $\{\theta_1,\theta_2,\dots,\theta_i\}$
+\item \textbf{key assumption:} an online  training algorithm does not use \emph{future} cost functionals in constructing $\theta_{i+1}$:
     $$\theta_{i+1} = F(c_1,\dots,c_i,\theta_1,\dots,\theta_i)$$
 \end{itemize}
 \end{frame}
@@ -226,60 +229,62 @@ assume infinite sequence of cost functionals:
    $$\theta_{j+1} = \theta_i - \eta_i \grad c_i(\theta_i)$$
 
     \begin{itemize}
-    \item[$\circ$] called \emph{online gradient descent} (OGD) from now on, because probability is not needed for it
+    \item[$\circ$] called \emph{online gradient descent} (OGD) from now on
+    \item[$\circ$] probability is not needed!
     \end{itemize}
 \item Adam (\emph{more later})
-\item Adaline, Adadelta, Adagrad, RMSprop, mini-batching, \dots
+\item Adaline, Adadelta, Adagrad, RMSprop, mini-batching, dropout, \dots
     \begin{itemize}
     \item[$\circ$] google search for buzzwords: \quad \texttt{tensorflow optimizers}
     \end{itemize}
-\item online (quasi-)Newton methods which use (or approximate) 2nd derivatives
+\item (quasi-)Newton methods which use (approximate) 2nd derivatives
 \end{itemize}
 \end{frame}
+
 
 \section{regret}
 
 \begin{frame}{regret of an online algorithm}
 
-\begin{block}{\textbf{definition}}
-the \emph{regret} of an online algorithm, at the $k$th step, is
+\begin{block}{\textbf{definition} (Zinkevich, 2003; decision theory in 1980s?)}
+the \emph{regret} of an online algorithm, at the $k$th training step, is
     $$R_k = \sum_{i=1}^k c_i(\theta_i) - \min_\theta \sum_{i=1}^k c_i(\theta)$$
 \end{block}
 
 \begin{itemize}
-\item regret $R_k$ is the difference between the algorithm result for the given stream $\{c_1,c_2,\dots\}$ and the best-possible result so far from a single parameter setting
+\item regret $R_k$ is the difference between the algorithm result for the stream so far $\{c_1,\dots,c_k\}$ and the best-possible cost from a single parameter setting
+    \begin{itemize}
+    \item[$\circ$] best setting so far:\quad  $\ds \theta_k^* = \begin{smallmatrix} \phantom{x} \\ \text{\footnotesize argmin} \\ \theta \end{smallmatrix} \sum_{i=1}^k c_i(\theta)$
+    \end{itemize}
+
+\smallskip
+\item $R_k>0$: the player regrets not choosing $\theta_k^*$
+\item negative regret is possible!
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{regret arose in game theory}
+\begin{frame}{regret in game theory}
 
 \begin{itemize}
 \item treat the algorithm as a \emph{player} and the online stream of cost functionals $c_i$ as an \emph{adversary}
 \item the player chooses $\theta_{i+1}$ \underline{before} knowing $c_{i+1}$
+\item the adversarial sequence $\{c_i\}$ is totally uncontrolled
 \end{itemize}
 
 \begin{block}{online convex game (Abernathy et al 2008)}
 \begin{pseudo*}
-for $i = 0,1,\dots,k-1$: \\+
+for $i = 0,1,\dots,k-1$ \\+
     \st{player chooses} $\theta_{i+1}$ \\
     \st{adversary chooses} $c_{i+1}$ \\-
-end \\
 \st{player suffers regret} \\+
     $\ds R_k = \sum_{i=1}^k c_i(\theta_i) - \min_\theta \sum_{i=1}^k c_i(\theta)$
 \end{pseudo*}
 \end{block}
-
-\begin{itemize}
-\item $R_k>0$: the player regrets not choosing $\theta = \argmin \sum_{i=1}^k c_i(\theta)$
-\item but negative regret is possible!
-\end{itemize}
 \end{frame}
 
 
 \begin{frame}{convex sets}
-
-FIXME FROM HERE, including $p\to\theta$ notation etc.
 
 \begin{itemize}
 \item previous slide says ``convex''; we need the definition
@@ -322,15 +327,17 @@ FIXME FROM HERE, including $p\to\theta$ notation etc.
 \end{frame}
 
 
-\begin{frame}{convex optimization}
+\begin{frame}{convex optimization: a classical topic}
 
 \begin{block}{definition}
 given a convex set $K \subset \RR^n$ and a convex function $f:K\to \RR$, we say that the problem
-    $$\min_{p \in K} f(p)$$
+    $$\min_{\theta \in K} f(\theta)$$
 is a \emph{convex optimization problem}
 \end{block}
 
 \begin{itemize}
+\item $K$ is often described by equality and inequality constraints
+\item $K=\RR^n$ is convex (unconstrained optimization)
 \item SVM is convex optimization, with nontrivial $K$
 \item \emph{I don't know the answer}:
 
@@ -339,80 +346,129 @@ for an ANN, when is $C^{\{i\}}(p) = \frac{1}{2} \left\|y^{\{i\}} - a^{[L]}(x^{\{
 \end{frame}
 
 
+\begin{frame}{convex optimization: the default algorithm}
+
+\begin{itemize}
+\item to solve $\ds \min_{\theta \in K} f(\theta)$
+\item assume $K\subset \RR^n$ is closed and convex
+\item assume $f$ is differentiable (\emph{and convex if you are optimistic})
+\item assume learning rates (\emph{step sizes}) $\eta_i>0$
+\end{itemize}
+
+\begin{block}{projected gradient descent}
+
+\begin{pseudo*}
+\st{choose} $\theta_1 \in K$ \\
+for $i = 1,2,\dots$ \\+
+    $\theta_{i+1} = \Pi_K \big(\theta_i - \eta_i \grad f(\theta_i)\big)$
+\end{pseudo*}
+\end{block}
+
+\begin{itemize}
+\item each $y\in \RR^n$ has a unique \emph{projection} $w = \Pi_K(y) \in K$ so that
+    $$w = \argmin_x \|y - x\|_2$$
+
+    \begin{itemize}
+    \item[$-$] $\Pi_K(y)$ is the closest point in $K$ to $y$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{online convex optimization}
 
+\begin{itemize}
+\item convex optimization is \emph{so}\, 20th century \dots let's go online!
+\end{itemize}
+
 \begin{block}{definition}
-\emph{online convex optimization}:  fix a convex set $K\subset \RR^n$, assume a sequence of convex functions $c_j:K\to \RR$, and find an algorithm for generating $p_{j+1} \in K$ from previous $c_j$, which makes $c_{j+1}(p_{j+1})$ small
+\emph{online convex optimization}:
+
+\begin{itemize}
+\item fix a convex set $K\subset \RR^n$
+\item assume a sequence of convex functions $c_i:K\to \RR$
+\item choose an algorithm for generating $\theta_{i+1} \in K$ from previous $c_i$
+\end{itemize}
 \end{block}
 
 \begin{itemize}
 \item online convex optimization = online convex programming
 \item this is \emph{not} a stochastic problem
+\item online gradient descent (OGD) is projected gradient descent with changing $f=c_i$:
+    $$\theta_{i+1} = \Pi_K \big(\theta_i - \eta_i \grad c_i(\theta_i)\big)$$
+\item the goal of any online algorithm is to \textbf{not suffer big regret}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{regarding regret}
+\begin{frame}{regarding regret: quotes from Zinkevich (2003)}
 
-\begin{itemize}
-\item Zinkevich (2003): 
-\end{itemize}
+\emph{We make \textbf{no distributional assumptions} about the convex cost functions.}
 
-\emph{We cannot hope to choose a point $p_j$ that minimizes $c_j$, because $c_j$ can be anything. Instead we try to minimize regret.}
-  $$R_k = \underbrace{\sum_{j=1}^k c_j(p_j)}_{\text{online alg.~result}} - \,\, \underbrace{\min_p \sum_{j=1}^k c_j(p)}_{\text{offline result}}$$
-\noindent \emph{If the sequence of cost functions $\{c_j\}$ is relatively stationary, then an online algorithm can learn what the cost functions will look like in the future.  If the sequence of cost functions varies drastically, then the offline algorithm will not be able to take advantage of this because it selects a single $p$.}
+\medskip
+\noindent \emph{We cannot hope to choose a point $\theta_i$ that minimizes $c_i$, because $c_i$ can be anything. Instead we try to minimize regret.}
+
+\medskip
+\noindent \emph{If the sequence of cost functions $\{c_i\}$ is relatively stationary, then an online algorithm can learn what the cost functions will look like in the future.  If the sequence of cost functions varies drastically, then the offline algorithm will not be able to take advantage of this because it selects a single $\theta$.}
+
+  $$R_k = \underbrace{\sum_{i=1}^k c_i(\theta_i)}_{\text{online alg.~result}} - \,\, \underbrace{\min_\theta \sum_{i=1}^k c_i(\theta)}_{\text{offline result}}$$
 \end{frame}
 
 
 \begin{frame}{how big is your regret?}
 
 \begin{itemize}
-\item in any case, when we minimize regret there is \textbf{no distributional assumption} about the cost functions $c_j$
-\item the online optimization framework allows one to evaluate an algorithm for machine learning by a \emph{regret bound}
-\item does this grow or decay with $k$?
-    $$R_k = \sum_{j=1}^k c_j(p_j) - \min_p \sum_{j=1}^k c_j(p)$$
-\item actually online (= fed by internet) ML might not want
-    $$\argmin_p \sum_{j=1}^k c_j(p)$$
-even if it is attainable
+\item the online optimization framework evaluates an ML training algorithm via a \emph{regret bound}:
+    \begin{itemize}
+    \item[$-$] does $R_k$ grow or decay with $k$?
+    \item[$-$] how fast does it grow?
+    \item[$-$] what properties of the objectives $c_i$ determine the bound?
+    \item[$-$] what algorithmic settings determine the bound?
+    \end{itemize}
+\item actually online (= fed by internet) ML training might not want the ``best'' offline setting \quad $\theta_k^* = \begin{smallmatrix} \phantom{x} \\ \text{\footnotesize argmin} \\ \theta \end{smallmatrix} \sum_{i=1}^k c_i(\theta)$, \, even if it is attainable
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{fixme}
+\section{analysis of online gradient descent (OGD)}
+
+\begin{frame}{Hazan bound}
+
+\begin{itemize}
+\item we need an example of a bound
+\item first bound for OGD assumes nice costs $c_i$
+\end{itemize}
+
+\begin{block}{theorem (Hazan et al., 2007)}
+Suppose the $c_i$ are uniformly strictly convex: $\grad^2 c_i \succ H > 0$.  Suppose we run OGD to find iterates $\theta_1,\dots,\theta_k$.  Let $G = \max_{i=1,\dots,k} \|\grad c_i(\theta_i)\|$.  Then
+    $$R_k \le \frac{G^2}{2 H} (1 + \log k)$$
+\end{block}
+\end{frame}
+
+
+\begin{frame}{x}
 
 \begin{itemize}
 \item fixme
 \end{itemize}
 \end{frame}
 
-\begin{frame}{fixme}
+
+\begin{frame}{OGD average regret goes to zero}
 
 \begin{itemize}
-\item fixme
+\item STATE COROLLARY
+\item this is the closest I've come to understanding why OGD (SGD) is a ``good'' algorithm for ML training
 \end{itemize}
 \end{frame}
 
 
-\section{analysis of online gradient descent}
-
-\begin{frame}{Hazan proof}
+\begin{frame}{other algorithms}
 
 \begin{itemize}
-\item fixme
-\end{itemize}
-\end{frame}
-
-\begin{frame}{other algorithms: Newton}
-
-\begin{itemize}
-\item fixme
-\end{itemize}
-\end{frame}
-
-\begin{frame}{other algorithms: FTl}
-
-\begin{itemize}
-\item fixme
+\item follow the leader
+\item Newton
+\item quasi-Newton
 \end{itemize}
 \end{frame}
 
@@ -427,7 +483,7 @@ even if it is attainable
 \end{frame}
 
 
-\section{frameworks, including risk}
+\section{frameworks, including empirical risk}
 
 \begin{frame}{risk and empirical risk}
 
@@ -456,10 +512,12 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
 \end{frame}
 
 
-\begin{frame}{the 5 frameworks for ML optimization}
+\begin{frame}{the 5 frameworks for ML training optimization}
 
 \begin{itemize}
 \item it seems ML optimization is portrayed in 5 different ways:
+
+\medskip
     \begin{enumerate}
     \item[1.] \textbf{risk} = find parameters which minimize expected cost over assumed distribution for training data
     \item[2.] \textbf{empirical risk} = find parameters which minimize sample mean over training data
@@ -473,10 +531,10 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
     \begin{itemize}
     \item[$-$] the training data distribution is unknown
     \end{itemize}
-\item 2,3,4 are the same goal once you remove probabilistic structures
+\item 2,3,4 are the same goal once you remove probabilistic edifice
 \item only 5 aligns with the \emph{algorithm designer's} concerns
     \begin{itemize}
-    \item[$-$] 5 is meta ML optimization
+    \item[$-$] 5 is \emph{meta-} ML training optimization
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -500,15 +558,16 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
 \begin{frame}{why online regret bounds?}
 
 \begin{itemize}
-\item by proving an online optimization regret bound you identify a rigorous property of the minimization algorithm
+\item by proving an online regret bound you identify a rigorous property of the minimization algorithm
 \item quantitative regret bounds distinguish between:
     \begin{itemize}
     \item[$-$] different algorithms (\textbf{ex.}~OGD versus Adam, $\eta_i$ choices, \dots)
-    \item[$-$] different cost functions (convex versus strongly convex)
+    \item[$-$] different cost functions (convex versus strictly convex)
     \end{itemize}
 \item analysis of regret bypasses probabilistic ``spin''
     \begin{itemize}
     \item[$-$] avoid risk, empirical risk, MLE, Bayes, etc.~when you really don't know probabilities for anything anyway
+    \item[$-$] a regret bound makes no distributional assumptions about the cost functions
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -526,11 +585,12 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
 \item E.~Hazan, A.~Agarwal, \& S.~Kale (2007).  \href{https://link.springer.com/content/pdf/10.1007/s10994-007-5016-8.pdf}{\emph{Logarithmic regret algorithms for online convex optimization.}} Machine Learning, 69(2), 169-192
     \begin{itemize}
     \scriptsize
-    \item[$-$] improves on Zinkevich regret bound by assuming positive definite Hessians
+    \item[$-$] better regret bounds assuming positive definite Hessians
     \end{itemize}
 \item D.~P.~Kingma \& J.~Ba (2014). \href{https://arxiv.org/abs/1412.6980}{\emph{Adam: A method for stochastic optimization}}, preprint arXiv:1412.6980.
     \begin{itemize}
     \scriptsize
+    \item[$-$] bounds Adam's regret
     \item[$-$] cites Zinkevich for online optimization framework
     \end{itemize}
 \item M.~Zinkevich (2003). \href{https://www.aaai.org/Papers/ICML/2003/ICML03-120.pdf}{\emph{Online convex programming and generalized infinitesimal gradient ascent}}, Proceedings of the 20th International Conference on Machine Learning, 928-936
