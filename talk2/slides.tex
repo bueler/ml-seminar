@@ -432,25 +432,48 @@ for $i = 1,2,\dots$ \\+
 
 \section{analysis of online gradient descent (OGD)}
 
-\begin{frame}{Hazan bound}
+\begin{frame}{logarithmic regret bound}
 
 \begin{itemize}
-\item we need an example of a bound
-\item first bound for OGD assumes nice costs $c_i$
+\item we need an example of a regret bound for OGD
+\item this bound assumes nice costs $c_i$: smooth and strictly-convex
 \end{itemize}
 
 \begin{block}{theorem (Hazan et al., 2007)}
-Suppose the $c_i$ are uniformly strictly convex: $\grad^2 c_i \succ H > 0$.  Suppose we run OGD to find iterates $\theta_1,\dots,\theta_k$.  Let $G = \max_{i=1,\dots,k} \|\grad c_i(\theta_i)\|$.  Then
+Suppose $c_i$ are uniformly strictly convex: $\grad^2 c_i \succ H > 0$.  Suppose iterates $\theta_1,\dots,\theta_k$ are from OGD.  Let $G = \max_{i=1,\dots,k} \|\grad c_i(\theta_i)\|$.  Let $\ds \eta_i = \frac{1}{i\,H}$.  Then
     $$R_k \le \frac{G^2}{2 H} (1 + \log k)$$
 \end{block}
 \end{frame}
 
 
-\begin{frame}{x}
+\begin{frame}{proof 1}
 
-\begin{itemize}
-\item fixme
-\end{itemize}
+\noindent \emph{proof:}  Let $G_i = \grad c_i(\theta_i)$ and $\theta^*=\theta_k^*$.  Taylor and strict-convexity give
+\begin{align*}
+c_i(\theta^*) &= c_i(\theta_i) + G_i^\top (\theta^* - \theta_i) + \frac{1}{2} (\theta^* - \theta_i)^\top \grad^2 c_i (\theta^* - \theta_i) \\
+    &\ge c_i(\theta_i) + G_i^\top (\theta^* - \theta_i) + \frac{H}{2} \|\theta^* - \theta_i\|^2
+\end{align*}
+so \quad $\ds 2 \big(c_i(\theta_i) - c_i(\theta^*)\big) \le 2 G_i^\top (\theta_i - \theta^*) - H \|\theta^* - \theta_i\|^2$
+
+\medskip
+\noindent On the other hand, OGD and convexity gives
+\begin{align*}
+\|\theta_{i+1} - \theta^*\|^2 &= \|\Pi_K(\theta_i - \eta_i G_i) - \theta^*\|^2 \le \|\theta_i - \eta_i G_i - \theta^*\|^2 \\
+    &\le \|\theta_i - \theta^*\|^2 - 2 \eta_i G_i^\top (\theta_i - \theta^*) + \eta_i^2 \|G_i\|^2
+\end{align*}
+so \quad $\ds 2 G_i^\top (\theta_i - \theta^*) \le \frac{1}{\eta_i} \left(\|\theta_i - \theta^*\|^2 - \|\theta_{i+1} - \theta^*\|^2\right) + \eta_i G^2$
+\end{frame}
+
+
+\begin{frame}{proof 2}
+
+Thus
+\begin{align*}
+2 R_k &= \sum_{i=1}^k 2 \big(c_i(\theta_i) - c_i(\theta^*)\big) \\
+    &\le \sum_{i=1}^k 2 G_i^\top (\theta_i - \theta^*) - H \sum_{i=1}^k \|\theta^* - \theta_i\|^2 \\
+    &\le \sum_{i=1}^k \frac{1}{\eta_i} \left(\|\theta_i - \theta^*\|^2 - \|\theta_{i+1} - \theta^*\|^2\right) + G^2 \sum_{i=1}^k \eta_i - H \sum_{i=1}^k \|\theta^* - \theta_i\|^2 \\
+    &= \sum_{i=1}^k \frac{\|\theta_i - \theta^*\|^2}{\eta_i} - \sum_{i=1}^k \frac{\|\theta_{i+1} - \theta^*\|^2}{\eta_i} + G^2 \sum_{i=1}^k \eta_i - H \sum_{i=1}^k \|\theta^* - \theta_i\|^2
+\end{align*}
 \end{frame}
 
 
