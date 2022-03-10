@@ -92,7 +92,7 @@
 
 \title{Online optimization}
 
-\subtitle{\emph{ML training algorithms reduce regret}}
+\subtitle{\emph{ML training algorithms regret less}}
 
 \author{Ed Bueler}
 
@@ -432,7 +432,7 @@ for $i = 1,2,\dots$ \\+
 \end{itemize}
 
 \begin{block}{theorem (Hazan et al., 2007)}
-Suppose $c_i$ are uniformly strictly convex: $\grad^2 c_i \succ H > 0$.  Suppose iterates $\theta_1,\dots,\theta_j$ are from OGD.  Let $G = \max_{i=1,\dots,j} \|\grad c_i(\theta_i)\|$.
+Suppose the $c_i$ are uniformly strictly convex: $\grad^2 c_i \succ H > 0$.  Compute iterates $\theta_1,\dots,\theta_j$ from OGD.  Let $G = \max_{i=1,\dots,j} \|\grad c_i(\theta_i)\|$.
 
 If $\ds \eta_i = \frac{1}{i\,H}$ then \, $\ds \boxed{R_j \le \frac{G^2}{2 H} (1 + \log j).}$
 \end{block}
@@ -450,7 +450,7 @@ If $\ds \eta_i = \frac{1}{i\,H}$ then \, $\ds \boxed{R_j \le \frac{G^2}{2 H} (1 
 \begin{itemize}
 \item Taylor expand $c_i(\theta^*)$ from basepoint $\theta_i$, to 2nd order.
 \item Use Hessian bound to bound $c_i(\theta_i) - c_i(\theta^*)$ in terms of $\grad c_i(\theta_i)^\top (\theta_i - \theta^*)$ and $\|\theta^* - \theta_i\|^2$.
-\item Bound $\grad c_i(\theta_i)^\top (\theta_i - \theta^*)$ by Pythagorean-ish argument.
+\item OGD bounds $\grad c_i(\theta_i)^\top (\theta_i - \theta^*)$ by Pythagorean-ish argument.
 \item Use $\eta_i = \frac{1}{i H}$ and telescoping to get\, $\ds 2 R_j \le \frac{G^2}{H} \sum_{i=1}^j \frac{1}{i}$.
 \item Integral test gives\, $\ds 2 R_j \le \frac{G^2}{H} (1 + \log j)$. \hfill \qed
 \end{itemize}
@@ -464,16 +464,15 @@ If $\ds \eta_i = \frac{1}{i\,H}$ then \, $\ds \boxed{R_j \le \frac{G^2}{2 H} (1 
     \begin{itemize}
     \item[$-$] also, learning rate $\eta_i = \frac{1}{i\,H}$ depends on $H$
     \end{itemize}
-\item actual ML training often not convex (e.g.~typical ANN)
-\item however, we need structure for analysis and comparison of algs.
-\item we now allow $\grad^2 c_i = 0$
+\item we now allow $\grad^2 c_i = 0$, so we need to assume $K$ is bounded
     \begin{itemize}
     \item[$-$] $c_i(\theta)$ could be linear in $\theta$
     \end{itemize}
+\item actual ML training is often not convex (e.g.~ANN), but analysis requires structure
 \end{itemize}
 
 \begin{block}{theorem (Zinkevich, 2003)}
-Suppose each $c_i:K \to \RR$ is convex and that $K\subset \RR^n$ is closed, convex, and bounded with diameter $d_K$.  Suppose iterates $\theta_1,\dots,\theta_j$ are from OGD.  Let $G = \max_{i=1,\dots,j} \|\grad c_i(\theta_i)\|$.
+Suppose $K\subset \RR^n$ is closed, convex, and bounded with diameter $d_K$.  Suppose each $c_i:K \to \RR$ is differentiable and convex.  Compute iterates $\theta_1,\dots,\theta_j$ from OGD.  Let $G = \max_{i=1,\dots,j} \|\grad c_i(\theta_i)\|$.
 
 If $\ds \eta_i = \frac{1}{\sqrt{i}}$ then \, $\ds \boxed{R_j \le \left(\frac{d_K^2}{2} + G^2\right) \sqrt{j} - \frac{G^2}{2}.}$
 \end{block}
@@ -489,7 +488,11 @@ If $\ds \eta_i = \frac{1}{\sqrt{i}}$ then \, $\ds \boxed{R_j \le \left(\frac{d_K
 \noindent \emph{proof sketch:}
 
 \begin{itemize}
-\item FIXME \hfill \qed
+\item Replace $c_i$ by linear functions with same gradients: \, $\tilde c_i(\theta) = g_i^\top \theta$ \, where $g_i = \grad c_i(\theta_i)$.
+\item Convexity of $c_i$ shows {\small $\ds \tilde R_j = \sum_{i=1}^j g_i^\top (\theta_i - \theta^*) \ge R_j$}.  (Regret increases.)
+\item OGD bounds $g_i^\top (\theta_i - \theta^*)$ by Pythagorean-ish argument.
+\item Use telescoping to get\, $\ds 2 \tilde R_j \le \frac{d_K^2}{\eta_j} + G^2 \sum_{i=1}^j \eta_i$
+\item Using integral test, choosing $p=0.5$ in $\eta_i = i^{-p}$ gives the slowest-growing regret bound. \hfill \qed
 \end{itemize}
 \end{frame}
 
@@ -503,6 +506,8 @@ If $\ds \eta_i = \frac{1}{\sqrt{i}}$ then \, $\ds \boxed{R_j \le \left(\frac{d_K
 \end{frame}
 
 
+\section{Adam's regret}
+
 \begin{frame}{other algorithms}
 
 \begin{itemize}
@@ -512,8 +517,6 @@ If $\ds \eta_i = \frac{1}{\sqrt{i}}$ then \, $\ds \boxed{R_j \le \left(\frac{d_K
 \end{itemize}
 \end{frame}
 
-
-\section{Adam's regret}
 
 \begin{frame}{Adam algorithm}
 
@@ -542,7 +545,7 @@ If $\ds \eta_i = \frac{1}{\sqrt{i}}$ then \, $\ds \boxed{R_j \le \left(\frac{d_K
 
 \section{frameworks, including empirical risk}
 
-\begin{frame}{risk and empirical risk}
+\begin{frame}{alternative framework: empirical risk}
 
 \begin{itemize}
 \item the \emph{Deep Learning} book (Chapter 8), for example, tells you that ML optimization is special because the data is stochastic
@@ -591,7 +594,7 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
 \item 2,3,4 are the same goal once you remove probabilistic edifice
 \item only 5 aligns with the \emph{algorithm designer's} concerns
     \begin{itemize}
-    \item[$-$] 5 is \emph{meta-} ML training optimization
+    \item[$-$] 5 is \emph{meta}-optimization
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -615,8 +618,11 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
 \begin{frame}{\alert{summary}: why online regret bounds?}
 
 \begin{itemize}
-\item an online regret bound is a rigorous property of a ML-training-suitable minimization algorithm
-\item quantitative regret bounds distinguish between:
+\item regret bounds are rigorous properties of ML-training-suitable, i.e.~online, minimization algorithms
+    \begin{itemize}
+    \item[$-$] the ML community seems to have adopted this way of analyzing algorithms
+    \end{itemize}
+\item quantitative regret bounds permit distinctions
     \begin{itemize}
     \item[$-$] different algorithms (e.g.~OGD versus Adam)
     \item[$-$] different cost functions (convex versus strictly convex)
@@ -628,7 +634,7 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
 \item analysis of regret bypasses probabilistic ``spin''
     \begin{itemize}
     \item[$-$] avoid distributional assumptions about the cost functions
-    \item[$-$] avoid risk, empirical risk, MLE, Bayes, \dots frameworks when you really don't know probabilities for training anyway
+    \item[$-$] avoid risk, empirical risk, MLE, Bayes, \dots frameworks in cases where you really don't know probabilities for training anyway
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -690,20 +696,20 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
 
 \begin{frame}{extra: Hazan proof}
 
-\noindent \emph{proof:}  Let $G_i = \grad c_i(\theta_i)$ and $\theta^*=\theta_j^*$.  Taylor and strict-convexity give
+\noindent \emph{proof:}  Let $g_i = \grad c_i(\theta_i)$ and $\theta^*=\theta_j^*$.  Taylor and strict-convexity give
 \begin{align*}
-c_i(\theta^*) &= c_i(\theta_i) + G_i^\top (\theta^* - \theta_i) + \frac{1}{2} (\theta^* - \theta_i)^\top \grad^2 c_i (\theta^* - \theta_i) \\
-    &\ge c_i(\theta_i) + G_i^\top (\theta^* - \theta_i) + \frac{H}{2} \|\theta^* - \theta_i\|^2
+c_i(\theta^*) &= c_i(\theta_i) + g_i^\top (\theta^* - \theta_i) + \frac{1}{2} (\theta^* - \theta_i)^\top \grad^2 c_i (\theta^* - \theta_i) \\
+    &\ge c_i(\theta_i) + g_i^\top (\theta^* - \theta_i) + \frac{H}{2} \|\theta^* - \theta_i\|^2
 \end{align*}
-so \quad $\ds 2 \big(c_i(\theta_i) - c_i(\theta^*)\big) \le 2 G_i^\top (\theta_i - \theta^*) - H \|\theta^* - \theta_i\|^2$ \quad for each $i$.
+so \quad $\ds 2 \big(c_i(\theta_i) - c_i(\theta^*)\big) \le 2 g_i^\top (\theta_i - \theta^*) - H \|\theta^* - \theta_i\|^2$ \quad for each $i$.
 
 \medskip
-\noindent On the other hand, the OGD update and convexity give
+\noindent On the other hand, OGD, a projection property, and convexity give
 \begin{align*}
-\|\theta_{i+1} - \theta^*\|^2 &= \|\Pi_K(\theta_i - \eta_i G_i) - \theta^*\|^2 \le \|\theta_i - \eta_i G_i - \theta^*\|^2 \\
-    &\le \|\theta_i - \theta^*\|^2 - 2 \eta_i G_i^\top (\theta_i - \theta^*) + \eta_i^2 \|G_i\|^2
+\|\theta_{i+1} - \theta^*\|^2 &= \|\Pi_K(\theta_i - \eta_i g_i) - \theta^*\|^2 \le \|\theta_i - \eta_i g_i - \theta^*\|^2 \\
+    &\le \|\theta_i - \theta^*\|^2 - 2 \eta_i g_i^\top (\theta_i - \theta^*) + \eta_i^2 \|g_i\|^2
 \end{align*}
-so \quad $\ds 2 G_i^\top (\theta_i - \theta^*) \le \frac{1}{\eta_i} \left(\|\theta_i - \theta^*\|^2 - \|\theta_{i+1} - \theta^*\|^2\right) + \eta_i G^2$ \quad for each $i$.
+so \quad $\ds 2 g_i^\top (\theta_i - \theta^*) \le \frac{1}{\eta_i} \left(\|\theta_i - \theta^*\|^2 - \|\theta_{i+1} - \theta^*\|^2\right) + \eta_i G^2$ \quad for each $i$.
 \end{frame}
 
 
@@ -711,7 +717,7 @@ so \quad $\ds 2 G_i^\top (\theta_i - \theta^*) \le \frac{1}{\eta_i} \left(\|\the
 
 Thus since $1/\eta_i = i H$,
 \begin{align*}
-2 R_j &= \sum_{i=1}^j 2 \big(c_i(\theta_i) - c_i(\theta^*)\big) \le \sum_{i=1}^j 2 G_i^\top (\theta_i - \theta^*) - H \sum_{i=1}^j \|\theta^* - \theta_i\|^2 \\
+2 R_j &= \sum_{i=1}^j 2 \big(c_i(\theta_i) - c_i(\theta^*)\big) \le \sum_{i=1}^j 2 g_i^\top (\theta_i - \theta^*) - H \sum_{i=1}^j \|\theta^* - \theta_i\|^2 \\
     &\le \sum_{i=1}^j \frac{1}{\eta_i} \left(\|\theta_i - \theta^*\|^2 - \|\theta_{i+1} - \theta^*\|^2\right) + G^2 \sum_{i=1}^j \eta_i - H \sum_{i=1}^j \|\theta^* - \theta_i\|^2 \\
     &= \sum_{i=1}^j i H \left(\|\theta_i - \theta^*\|^2 - \|\theta_{i+1} - \theta^*\|^2\right) + \frac{G^2}{H} \sum_{i=1}^j \frac{1}{i} - H \sum_{i=1}^j \|\theta^* - \theta_i\|^2 \\
     &= \sum_{i=1}^j (i-1) H \|\theta_i - \theta^*\|^2 - \sum_{i=1}^j i H  \|\theta_{i+1} - \theta^*\|^2 + \frac{G^2}{H} \sum_{i=1}^j \frac{1}{i} \\
@@ -719,5 +725,59 @@ Thus since $1/\eta_i = i H$,
 \end{align*}
 \end{frame}
 
+
+\begin{frame}{extra: Zinkevich proof}
+
+\begin{itemize}
+\item the per-iterate regret increases if we replace $c_i$ by a linear function
+\end{itemize}
+
+\medskip
+\noindent \emph{Lemma:}  Suppose $c_i(\theta)$ is convex.  For $\theta_i,\theta^* \in K$, if $g_i = \grad c_i(\theta_i)$ then $c_i(\theta_i) - c_i(\theta^*) \le g_i^\top (\theta_i - \theta^*)$.
+
+\smallskip
+\noindent \emph{proof:}  By convexity, $c_i(\theta^*) \ge c_i(\theta_i) + g_i^\top (\theta^* - \theta_i)$. \hfill \qed
+
+\medskip
+\begin{itemize}
+\item now we can prove the theorem
+\end{itemize}
+
+\medskip
+\noindent \emph{proof:}  As in Hazan, by OGD and projection,
+\begin{align*}
+\|\theta_{i+1} - \theta^*\|^2 &= \|\Pi_K(\theta_i - \eta_i g_i) - \theta^*\|^2 \le \|\theta_i - \eta_i g_i - \theta^*\|^2 \\
+    &\le \|\theta_i - \theta^*\|^2 - 2 \eta_i g_i^\top (\theta_i - \theta^*) + \eta_i^2 \|g_i\|^2
+\end{align*}
+so \quad $\ds 2 g_i^\top (\theta_i - \theta^*) \le \frac{1}{\eta_i} \left(\|\theta_i - \theta^*\|^2 - \|\theta_{i+1} - \theta^*\|^2\right) + \eta_i G^2$ \quad for each $i$.
+\end{frame}
+
+
+\begin{frame}{extra: Zinkevich proof \alert{cont.}}
+
+Thus, assuming $\eta_i$ is decreasing and nonnegative,
+\begin{align*}
+2 R_j &= \sum_{i=1}^j 2 \left(c_i(\theta_i) - c_i(\theta^*)\right) \le \sum_{i=1}^j 2 g_i^\top (\theta_i - \theta^*) \\
+  &\le \sum_{i=1}^j \frac{1}{\eta_i} \left(\|\theta_i - \theta^*\|^2 - \|\theta_{i+1} - \theta^*\|^2\right) + G^2 \sum_{i=1}^j \eta_i \\
+  &\le \frac{1}{\eta_1} \|\theta_1 - \theta^*\|^2 + \sum_{i=2}^j \left(\frac{1}{\eta_i} - \frac{1}{\eta_{i-1}}\right) \|\theta_i - \theta^*\|^2 \\
+  &\qquad - \frac{1}{\eta_{j+1}} \|\theta_{j+1} - \theta^*\|^2 + G^2 \sum_{i=1}^j \eta_i \\
+  &\le d_K^2 \left[\frac{1}{\eta_1} + \sum_{i=2}^j \left(\frac{1}{\eta_i} - \frac{1}{\eta_{i-1}}\right)\right] - 0 + G^2 \sum_{i=1}^j \eta_i
+\end{align*}
+\end{frame}
+
+
+\begin{frame}{extra: Zinkevich proof \alert{cont.} \alert{cont.}}
+
+By telescoping,
+    $$2 R_j \le \frac{d_K^2}{\eta_j} + G^2 \sum_{i=1}^j \eta_i$$
+Substitute $\eta_i = i^{-p}$ and use integral test:
+\begin{align*}
+2 R_j &\le d_K^2\,j^{p} + G^2 \sum_{i=1}^j i^{-p} \le d_K^2\,j^{p} + G^2 \left(1 + \int_1^j x^{-p}\,dx\right) \\
+    &\le d_K^2\,j^{p} + G^2 \left(1 + \frac{j^{1-p} - 1}{1-p}\right)
+\end{align*}
+Using $p=0.5$ balances powers for smallest growth rate:
+  $$2 R_j \le d_K^2\,\sqrt{j} + G^2 \left(1 + 2 (\sqrt{j} - 1)\right)$$
+Rearrange to \quad $\ds R_j \le \left(\frac{d_K^2}{2} + G^2\right) \sqrt{j} - \frac{G^2}{2}$. \hfill \qed
+\end{frame}
 
 \end{document}
