@@ -492,28 +492,67 @@ If $\ds \eta_i = \frac{1}{\sqrt{i}}$ then \, $\ds \boxed{R_j \le \left(\frac{d_K
 \item Convexity of $c_i$ shows {\small $\ds \tilde R_j = \sum_{i=1}^j g_i^\top (\theta_i - \theta^*) \ge R_j$}.  (Regret increases.)
 \item OGD bounds $g_i^\top (\theta_i - \theta^*)$ by Pythagorean-ish argument.
 \item Use telescoping to get\, $\ds 2 \tilde R_j \le \frac{d_K^2}{\eta_j} + G^2 \sum_{i=1}^j \eta_i$
-\item Using integral test, choosing $p=0.5$ in $\eta_i = i^{-p}$ gives the slowest-growing regret bound. \hfill \qed
+\item Choose $\eta_i = i^{-p}$ and use integral test.
+\item $p=0.5$ gives the slowest-growing bound. \hfill \qed
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}{OGD average regret goes to zero}
 
+\begin{block}{corollary}
+under reasonable convexity hypotheses, the average regret of OGD goes to zero:
+    $$\lim_{j\to\infty} \frac{R_j}{j} = 0.$$
+\end{block}
+
 \begin{itemize}
-\item COROLLARY
-\item this is the closest I've come to understanding why OGD (SGD) is a ``good'' algorithm for ML training
+\item as close as I have come to understanding why OGD/SGD is a \emph{good} algorithm for ML training
 \end{itemize}
 \end{frame}
 
 
 \section{Adam's regret}
 
-\begin{frame}{other algorithms}
+\begin{frame}{other algorithms: follow the leader}
 
 \begin{itemize}
-\item follow the leader
-\item Newton
-\item quasi-Newton
+\item follow the leader (FTL) is an old ($\sim 1957$) decision theory alg.
+
+\begin{block}{follow the leader (FTL)}
+
+\begin{pseudo*}
+\st{choose} $\theta_1$ \\
+for $i = 1,2,\dots$ \\+
+    $\ds \theta_{i+1} = \argmin \sum_{\ell=1}^i c_\ell(\theta)$
+\end{pseudo*}
+\end{block}
+
+\item FTL has no sub-linear regret bound: $\ds \frac{R_j}{j} \nrightarrow 0$
+    \begin{itemize}
+    \item[$-$] see Hazan et al.~(2007)
+    \item[$-$] concrete example in \href{https://cpb-us-e1.wpmucdn.com/sites.usc.edu/dist/3/137/files/2017/02/lec24-2bywoz5.pdf}{notes by M.~Razaviyayn}
+    \end{itemize}
+\item this example shows $O(\log j)$ or $O(\sqrt{j})$ regret bounds are nontrivial
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{other algorithms: quasi-Newton}
+
+\begin{itemize}
+\item Hazan et al.~(2007) propose the \emph{online Newton step} (ONS) algorithm
+\item actually a quasi-Newton method because it constructs an approximation to the Hessian on the fly
+    \begin{itemize}
+    \item[$-$] compare L-BFGS etc.
+    \end{itemize}
+
+\begin{block}{theorem (Hazan et al.~2007)}
+ONS has $R_j = O(\log j)$ if the $c_i$ are $\alpha$-exp-concave
+\end{block}
+\end{frame}
+
+\item $\alpha$-exp-concave $\supset$ strictly-convex
+\item Hazan (2007) shows ONS is a \emph{follow the \underline{approximate} leader} algorithm
 \end{itemize}
 \end{frame}
 
