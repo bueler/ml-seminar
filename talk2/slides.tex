@@ -558,14 +558,36 @@ ONS has $R_j = O(\log j)$ if the $c_i$ are $\alpha$-exp-concave
 
 \begin{frame}{Adam algorithm}
 
+\begin{block}{Adam (Kingma \& Ba, 2014)}
+
+\begin{pseudo*}
+\st{defaults:} $\alpha=0.001$, $\beta_1=0.9$, $\beta_2=0.999$, $\eps=10^{-8}$ \\
+\st{given:} $\theta_1$ \\
+$m_0 \gets 0$, $v_0 \gets 0$ \\
+for $i=1,2,\dots$ \\+
+    $g_i = \grad c_i(\theta_i)$ \\
+    $m_i = \beta_1 m_{i-1} + (1-\beta_1) g_i$  \hspace{15mm} \ct{1st moment vector} \\
+    $v_i = \beta_2 v_{i-1} + (1-\beta_2) g_i^2$  \hspace{16mm} \ct{2nd moment vector} \\
+    $\alpha_i = \alpha\,\sqrt{1-\beta_2^i\,} / (1-\beta_1^i)$  \hspace{16mm} \ct{bias-corrected step} \\
+    $\theta_{i+1} = \theta_i - \alpha_i m_i / (\sqrt{v_i\,} + \eps)$
+\end{pseudo*}
+\end{block}
+
 \begin{itemize}
-\item fixme PSEUDOCODE
-\item no $\eta_i$ schedule needed
+\item no learning rate schedule ($\eta_i$) needed
+\item $\theta$ updates are invariant to scaling of $c_i$
+\item performs ``step-size annealing''
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}{Adam's regret bound}
+
+\noindent Kingma \& Ba (2014):  \emph{We analyze the convergence of Adam using the online learning framework proposed in (Zinkevich, 2003). \dots Since the nature of the [cost function] sequence is unknown in advance, we evaluate the algorithm using the regret \dots}
+
+\begin{block}{theorem}
+Compute iterates $\theta_1,\dots,\theta_j$ from Adam, and let $D=FIXME$.  Let $G = \max_{i=1,\dots,j} \|\grad c_i(\theta_i)\|$. FIXME $\ds \boxed{R_j \le \frac{G^2}{2 H} (1 + \log j).}$
+\end{block}
 
 \begin{itemize}
 \item fixme
