@@ -92,7 +92,7 @@
 
 \title{Online optimization}
 
-\subtitle{\emph{ML training algorithms regret less}}
+\subtitle{\emph{good ML training algorithms regret less}}
 
 \author{Ed Bueler}
 
@@ -128,7 +128,7 @@
 \item why is SGD so popular? is my algorithm better than yours?
 
 \medskip
-\item it was easy to stumble upon:
+\item when looking around it was easy to stumble upon:
 
 \medskip
 \begin{center}
@@ -137,7 +137,7 @@
 
 \medskip
     \begin{itemize}
-    \item[$-$] 100651 citations
+    \item[$-$] 101000 citations
     \item[$-$] the Adam optimizer is the default for \href{https://www.tensorflow.org/tutorials/keras/classification}{tensorflow}, \href{https://pytorch.org/docs/stable/optim.html}{pytorch}, \dots
     \end{itemize}
 
@@ -549,7 +549,6 @@ for $i = 1,2,\dots$ \\+
 \begin{block}{theorem (Hazan et al.~2007)}
 ONS has $R_j = O(\log j)$ if the $c_i$ are $\alpha$-exp-concave
 \end{block}
-\end{frame}
 
 \item $\alpha$-exp-concave $\supset$ strictly-convex
 \item Hazan (2007) shows ONS is a \emph{follow the \underline{approximate} leader} algorithm
@@ -582,7 +581,7 @@ ONS has $R_j = O(\log j)$ if the $c_i$ are $\alpha$-exp-concave
 \end{frame}
 
 
-\section{frameworks, including empirical risk}
+\section{frameworks for ML training, including empirical risk}
 
 \begin{frame}{alternative framework: empirical risk}
 
