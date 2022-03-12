@@ -137,7 +137,7 @@
 \item why is SGD so popular? is my algorithm better than yours?
 
 \medskip
-\item when looking around it was easy to stumble upon:
+\item it was easy to stumble upon Kingma \& Ba (2014):
 
 \medskip
 \begin{center}
@@ -146,7 +146,7 @@
 
 \medskip
     \begin{itemize}
-    \item[$-$] 101000 citations for Kingma \& Ba (2014)
+    \item[$-$] 101000 citations; Google Scholar's top-cited paper in 2020
     \item[$-$] the Adam optimizer is the default for \href{https://www.tensorflow.org/tutorials/keras/classification}{tensorflow}, \href{https://pytorch.org/docs/stable/optim.html}{pytorch}, \dots
     \end{itemize}
 
@@ -516,12 +516,14 @@ If $\ds \eta_i = \frac{1}{\sqrt{i}}$ then \, $\ds \boxed{R_j \le \left(\frac{d_K
 
 \begin{block}{corollary}
 under either hypothesis, the average regret of OGD goes to zero:
-    $$\lim_{j\to\infty} \frac{R_j}{j} = 0.$$
+    $$\lim_{j\to\infty} \frac{R_j}{j} = 0,$$
+equivalently, average cost converges to its optimal value:
+    $$\lim_{j\to\infty} \frac{1}{j} \sum_{i=1}^j c_i(\theta_i) = \lim_{j\to\infty} \min_\theta \frac{1}{j} \sum_{i=1}^j c_i(\theta)$$
 \end{block}
 
 \begin{itemize}
-\item explanation 1 for why OGD$=$SGD is a \emph{good} ML training algorithm
-\item apparently, \emph{some} convexity is needed?
+\item an explanation for why OGD$=$SGD is a \emph{good} ML training algorithm
+\item apparently, \emph{some} convexity is needed
 \end{itemize}
 \end{frame}
 
@@ -531,7 +533,7 @@ under either hypothesis, the average regret of OGD goes to zero:
 \begin{frame}{other algorithms: follow the leader}
 
 \begin{itemize}
-\item this example shows Zinkevich $O(\sqrt{j})$ regret bound is nontrivial!
+\item this example shows Zinkevich $O(\sqrt{j\,})$ regret bound is nontrivial!
 \item follow the leader is an old ($1957$?) decision theory alg.
 
 \begin{block}{follow the leader (FTL)}
@@ -548,7 +550,6 @@ for $i = 1,2,\dots$ \\+
     \item[$-$] concrete example in \href{https://cpb-us-e1.wpmucdn.com/sites.usc.edu/dist/3/137/files/2017/02/lec24-2bywoz5.pdf}{notes by M.~Razaviyayn}; $c_i(\theta)$ are linear and Zinkevich argument for OGD applies
     \item[$-$] see also Hazan et al.~(2007)
     \end{itemize}
-\item explanation 2 for why OGD$=$SGD is a \emph{good} ML training algorithm
 \end{itemize}
 \end{frame}
 
@@ -556,7 +557,7 @@ for $i = 1,2,\dots$ \\+
 \begin{frame}{other algorithms: quasi-Newton}
 
 \begin{itemize}
-\item Hazan et al.~(2007) propose the \emph{online Newton step} (ONS) algorithm
+\item Hazan et al.~(2007) also propose a \emph{online Newton step} (ONS) algorithm
 \item actually a quasi-Newton method because it constructs an approximation to the Hessian on the fly
     \begin{itemize}
     \item[$-$] compare L-BFGS etc.
@@ -605,7 +606,7 @@ for $i=1,2,\dots$ \\+
 \includegraphics[height=0.42\textheight]{figs/adam-results-nn.png}}
 \end{center}
 \begin{itemize}
-\item 99\% of Kingma \& Ba (2014) readers see graphs and are happy?
+\item 99\% of Kingma \& Ba (2014) readers see above results graphs and are happy?
 \end{itemize}
 \end{frame}
 
@@ -615,15 +616,16 @@ for $i=1,2,\dots$ \\+
 \noindent Kingma \& Ba (2014):  \emph{We analyze the convergence of Adam using the online learning framework proposed in (Zinkevich, 2003). \dots Since the nature of the [cost function] sequence is unknown in advance, we evaluate the algorithm using the regret \dots}
 
 \medskip
-\begin{block}{\only<1>{theorem}\only<2>{{\color{red} overstated claim}}}
-Compute iterates $\theta_1,\dots,\theta_j$ from Adam.  Then $\ds \boxed{R_j = O(\sqrt{j\,}).}$
+\begin{block}{\only<1>{theorem\phantom{we regret to inform you \dots}}\only<2>{we regret to inform you \dots\phantom{theorem}}}
+Compute iterates $\theta_1,\dots,\theta_j$ from Adam.  Then $\ds \boxed{R_j \only<1>{=}\only<2>{\ne} O(\sqrt{j\,}).}$
 \end{block}
 
 \begin{itemize}
 \item $O(\sqrt{j\,})$ is the same as Zinkevich's bound, but Adam's constants are better, especially for $\theta \in \RR^d$ with large $d$
-\item<2> Reddi et al.~(2019) propose AMSGrad algorithm
+\item<2> Reddi et al.~(2019):
     \begin{itemize}
     \item[$-$] construct example where $\frac{R_j}{j} \nrightarrow 0$ for Adam!
+    \item[$-$] propose AMSGrad algorithm
     \item[$-$] actually prove $R_j = O(\sqrt{j\,})$ for AMSGrad \dots it seems
     \end{itemize}
 \end{itemize}
@@ -674,7 +676,7 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
     \end{enumerate}
 
 \bigskip
-\item 1 is only notional
+\item typically, 1 is only notional
     \begin{itemize}
     \item[$-$] the training data distribution is unknown
     \end{itemize}
@@ -711,16 +713,16 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
     \end{itemize}
 \item quantitative regret bounds expose performance differences
     \begin{itemize}
-    \item[$-$] different algorithms (e.g.~OGD vs Adam vs AMSGrad)
+    \item[$-$] different algorithms (e.g.~OGD vs FTL vs Adam vs AMSGrad)
     \item[$-$] different cost functions (convex vs strictly-convex vs $\alpha$-exp-concave)
     \end{itemize}
 \item regret bounds reveal how to set learning rates
     \begin{itemize}
     \item[$-$] compare $\eta_i$ in Hazan, Zinkevich, Adam, AMSGrad proofs    \end{itemize}
-\item analysis of regret bypasses probabilistic ``spin''
+\item analysis of regret avoids probability
     \begin{itemize}
     \item[$-$] avoid distributional assumptions about the cost functions
-    \item[$-$] avoid risk, empirical risk, MLE, Bayes, \dots frameworks in cases where you really don't know probabilities for training anyway
+    \item[$-$] avoid risk, empirical risk, MLE, Bayes, \dots when you really don't know probabilities for training data anyway
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -743,7 +745,7 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
 \item D.~P.~Kingma \& J.~Ba (2014). \href{https://arxiv.org/abs/1412.6980}{\emph{Adam: A method for stochastic optimization}}, preprint arXiv:1412.6980.
     \begin{itemize}
     \scriptsize
-    \item[$-$] claims $O(\sqrt{j})$ regret bound; cites Zinkevich for online optimization framework
+    \item[$-$] claims $O(\sqrt{j})$ regret bound framework
     \end{itemize}
 \item S.~J.~Reddi, S.~Kale, \& S.~Kumar (2019). \href{https://arxiv.org/abs/1904.09237}{\emph{On the convergence of Adam and beyond}}, preprint arXiv:1904.09237.
     \begin{itemize}
