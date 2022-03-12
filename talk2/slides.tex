@@ -1,5 +1,6 @@
 \documentclass[xcolor={svgnames},
-               hyperref={colorlinks,citecolor=DeepPink4,linkcolor=FireBrick,urlcolor=Maroon}]
+               hyperref={colorlinks,citecolor=DeepPink4,linkcolor=FireBrick,urlcolor=Maroon},
+               usepdftitle=false]  % see \hypersetup{} below
                {beamer}
 
 \mode<presentation>{
@@ -11,6 +12,14 @@
 
 \setbeamercolor*{block title}{bg=red!10}
 \setbeamercolor*{block body}{bg=red!5}
+
+\usepackage{hyperref}
+\hypersetup{
+    pdftitle = {Online optimization},
+    pdfauthor = {Ed Bueler},
+    pdfsubject = {},
+    pdfkeywords = {},
+}
 
 \usepackage[english]{babel}
 \usepackage[latin1]{inputenc}
@@ -90,7 +99,7 @@
       \usebeamertemplate{enumerate item} \,}}
 
 
-\title{Online optimization}
+\title[Online optimization]{Online optimization}
 
 \subtitle{\emph{good ML training algorithms regret less}}
 
@@ -589,24 +598,34 @@ for $i=1,2,\dots$ \\+
 \end{frame}
 
 
-\begin{frame}{Adam's regret bound}
+\begin{frame}{Adam results}
 
-\noindent Kingma \& Ba (2014):  \emph{We analyze the convergence of Adam using the online learning framework proposed in (Zinkevich, 2003). \dots Since the nature of the [cost function] sequence is unknown in advance, we evaluate the algorithm using the regret \dots}
-
-\begin{block}{theorem}
-Compute iterates $\theta_1,\dots,\theta_j$ from Adam, and let $D=FIXME$.  Let $G = \max_{i=1,\dots,j} \|\grad c_i(\theta_i)\|$. FIXME $\ds \boxed{R_j \le \frac{G^2}{2 H} (1 + \log j).}$
-\end{block}
-
+\begin{center}
+\mbox{\includegraphics[height=0.42\textheight]{figs/adam-results.png} \,
+\includegraphics[height=0.42\textheight]{figs/adam-results-nn.png}}
+\end{center}
 \begin{itemize}
-\item fixme
+\item 99\% of Kingma \& Ba (2014) readers see graphs and are happy?
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{Adam results}
+\begin{frame}{Adam's regret bound}
+
+\noindent Kingma \& Ba (2014):  \emph{We analyze the convergence of Adam using the online learning framework proposed in (Zinkevich, 2003). \dots Since the nature of the [cost function] sequence is unknown in advance, we evaluate the algorithm using the regret \dots}
+
+\medskip
+\begin{block}{\only<1>{theorem}\only<2>{{\color{red} overstated claim}}}
+Compute iterates $\theta_1,\dots,\theta_j$ from Adam.  Then $\ds \boxed{R_j = O(\sqrt{j\,}).}$
+\end{block}
 
 \begin{itemize}
-\item fixme
+\item $O(\sqrt{j\,})$ is the same as Zinkevich's bound, but Adam's constants are better, especially for $\theta \in \RR^d$ with large $d$
+\item<2> Reddi et al.~(2019) propose AMSGrad algorithm
+    \begin{itemize}
+    \item[$-$] construct example where $\frac{R_j}{j} \nrightarrow 0$ for Adam!
+    \item[$-$] actually prove $R_j = O(\sqrt{j\,})$ for AMSGrad \dots it seems
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -688,17 +707,16 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
 \begin{itemize}
 \item regret bounds are rigorous properties of ML-training-suitable, i.e.~online, minimization algorithms
     \begin{itemize}
-    \item[$-$] the ML community seems to have adopted this way of analyzing algorithms
+    \item[$-$] the ML community has adopted this way of analyzing algorithms
     \end{itemize}
-\item quantitative regret bounds permit distinctions
+\item quantitative regret bounds expose performance differences
     \begin{itemize}
-    \item[$-$] different algorithms (e.g.~OGD versus Adam)
-    \item[$-$] different cost functions (convex versus strictly convex)
+    \item[$-$] different algorithms (e.g.~OGD vs Adam vs AMSGrad)
+    \item[$-$] different cost functions (convex vs strictly-convex vs $\alpha$-exp-concave)
     \end{itemize}
-\item regret bounds show how to set the learning rates
+\item regret bounds reveal how to set learning rates
     \begin{itemize}
-    \item[$-$] compare $\eta_i$ in Hazan proof, Zinkevich proof, Adam proof
-    \end{itemize}
+    \item[$-$] compare $\eta_i$ in Hazan, Zinkevich, Adam, AMSGrad proofs    \end{itemize}
 \item analysis of regret bypasses probabilistic ``spin''
     \begin{itemize}
     \item[$-$] avoid distributional assumptions about the cost functions
@@ -720,20 +738,24 @@ the \emph{empirical risk} of an ANN parameter setting is the average cost over t
 \item E.~Hazan, A.~Agarwal, \& S.~Kale (2007).  \href{https://link.springer.com/content/pdf/10.1007/s10994-007-5016-8.pdf}{\emph{Logarithmic regret algorithms for online convex optimization.}} Machine Learning, 69(2), 169-192
     \begin{itemize}
     \scriptsize
-    \item[$-$] better regret bounds assuming positive definite Hessians
-    \item[$-$] regret bounds for Newton algorithms
+    \item[$-$] $O(\log j)$ regret bounds for positive definite Hessians, and for Newton algorithms
     \end{itemize}
 \item D.~P.~Kingma \& J.~Ba (2014). \href{https://arxiv.org/abs/1412.6980}{\emph{Adam: A method for stochastic optimization}}, preprint arXiv:1412.6980.
     \begin{itemize}
     \scriptsize
-    \item[$-$] bounds Adam's regret
-    \item[$-$] cites Zinkevich for online optimization framework
+    \item[$-$] claims $O(\sqrt{j})$ regret bound; cites Zinkevich for online optimization framework
+    \end{itemize}
+\item S.~J.~Reddi, S.~Kale, \& S.~Kumar (2019). \href{https://arxiv.org/abs/1904.09237}{\emph{On the convergence of Adam and beyond}}, preprint arXiv:1904.09237.
+    \begin{itemize}
+    \scriptsize
+    \item[$-$] debunks Kingma \& Ba (2014) regret bound proof
+    \item[$-$] Adam $\stackrel{\text{replace with}}{\to}$ AMSGrad
     \end{itemize}
 \item M.~Zinkevich (2003). \href{https://www.aaai.org/Papers/ICML/2003/ICML03-120.pdf}{\emph{Online convex programming and generalized infinitesimal gradient ascent}}, Proceedings of the 20th International Conference on Machine Learning, 928-936
     \begin{itemize}
     \scriptsize
     \item[$-$] introduced regret?
-    \item[$-$] shows $O(\sqrt{T})$ regret bound of OGD
+    \item[$-$] shows $O(\sqrt{j})$ regret bound of OGD
     \end{itemize}
 \end{itemize}
 \end{frame}
