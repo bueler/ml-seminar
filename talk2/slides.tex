@@ -236,7 +236,7 @@ assume infinite sequence of cost functionals:
 \begin{frame}{online training algorithms: examples}
 
 \begin{itemize}
-\item \emph{online gradient descent} (OGD) with learning rates $\eta_i$:
+\item \emph{online gradient descent} (OGD) with learning rates $\eta_i>0$:
    $$\theta_{i+1} = \theta_i - \eta_i \grad c_i(\theta_i)$$
 
     \begin{itemize}
@@ -247,6 +247,7 @@ assume infinite sequence of cost functionals:
     \begin{itemize}
     \item[$\circ$] google search for buzzwords: \quad \texttt{tensorflow optimizers}
     \end{itemize}
+\item follow the leader (\emph{more later})
 \item (quasi-)Newton methods which use (approximate) 2nd derivatives
 \end{itemize}
 \end{frame}
@@ -262,14 +263,14 @@ the \emph{regret} of an online algorithm, at the $k$th training step, is
 \end{block}
 
 \begin{itemize}
-\item regret $R_j$ is difference between algorithm's result for the stream so far and the best-possible cost from a single parameter setting
+\item regret $R_j$ is difference between algorithm's result for the costs so far and the best-possible cost from a single parameter setting
     \begin{itemize}
     \item[$\circ$] best setting so far:\quad  $\ds \theta_j^* = \begin{smallmatrix} \phantom{x} \\ \text{\footnotesize argmin} \\ \theta \end{smallmatrix} \sum_{i=1}^j c_i(\theta)$
     \end{itemize}
 
 \smallskip
-\item $R_j>0$: the player regrets not choosing $\theta_j^*$
 \item negative regret is possible!
+\item $R_j>0$: the player regrets not choosing $\theta_j^*$
 \end{itemize}
 \end{frame}
 
@@ -279,7 +280,7 @@ the \emph{regret} of an online algorithm, at the $k$th training step, is
 \begin{itemize}
 \item treat the algorithm as a \emph{player} and the online stream of cost functionals $c_i$ as an \emph{adversary}
 \item the player chooses $\theta_{i}$ \alert{before} knowing $c_{i}$
-\item the adversarial sequence $\{c_i\}$ is totally uncontrolled
+\item the adversarial sequence $\{c_i\}$ is totally-uncontrolled
 \end{itemize}
 
 \begin{block}{online convex game (Abernathy et al 2008)}
@@ -543,7 +544,7 @@ for $i = 1,2,\dots$ \\+
     \begin{itemize}
     \item[$-$] concrete example in \href{https://cpb-us-e1.wpmucdn.com/sites.usc.edu/dist/3/137/files/2017/02/lec24-2bywoz5.pdf}{notes by M.~Razaviyayn}\footnote{https://cpb-us-e1.wpmucdn.com/sites.usc.edu/dist/3/137/files/2017/02/lec24-2bywoz5.pdf}; $c_i(\theta)$ are linear and Zinkevich argument for OGD applies
     \end{itemize}
-\item lesson: don't try to hard to optimize the $c_i$ you already know!
+\item lesson: don't try too hard to optimize the $c_i$ you already know!
 \end{itemize}
 \end{frame}
 
